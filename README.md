@@ -65,7 +65,7 @@ PWA que centraliza pontos de coleta de reciclagem de Ribeirão Preto: moradores 
 
 ## Testes
 
-Backend: `cd backend && npm test` (Jest)
+Backend: `node --test backend/tests` (test runner nativo do Node, sem dependências extras)
 
 ## Licença / Uso acadêmico
 
