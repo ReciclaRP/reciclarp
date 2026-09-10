@@ -8,7 +8,7 @@
 
 **Trilha:** B
 
-**Data:** 04/09/2026
+**Data:** 10/09/2026
 
 Cadeia completa. A coluna "Código" fica em aberto até a implementação (Sprint correspondente) e será preenchida com o link do PR/arquivo a partir da E5.
 
