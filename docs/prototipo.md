@@ -14,7 +14,7 @@
 | 4      | Cidadão | nº 8 - Como usuário, quero relatar um problema em um ponto já cadastrado, para que a ONG corrija a informação. | Enviar um relato de erro no ponto. |
 | 8      | ONG     | nº 9 - Como ONG, quero editar horários e informações de pontos já aprovados, para manter os dados atualizados quando algo muda. | Visualizar e editar pontos. |
 | 9     | ONG      | nº 10 - Como ONG, quero visualizar um painel com o total de pontos ativos agrupados por tipo de material e por bairro/região, para embasar novas ações de conscientização. | Visualizar pontos ativos em uma tabela. |
-| 10     | ONG     | nº 11 - Como ONG, quero exportar o relatório do painel, para usar em reuniões. | Botão exportar. |
+| 9     | ONG     | nº 11 - Como ONG, quero exportar o relatório do painel, para usar em reuniões. | Botão exportar. |
 | 6      | Usuário | nº 12 - Como usuário, quero ver dicas curtas de separação de materiais, para descartar corretamente  | Visualização de dicas. |
 
 
