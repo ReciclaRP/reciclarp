@@ -2,12 +2,12 @@
 -- Equipe: Adrian Souza Teixeira (RA 2840482421051), Heitor Benedetti Lopes (RA 2840482421003), Victor Breno Anastácio de Matos (RA 2840482313038)
 -- PostgreSQL 15+
  
-CREATE TABLE usuario (
+CREATE TABLE user (
   id SERIAL PRIMARY KEY,
-  nome VARCHAR(120) NOT NULL,
+  name VARCHAR(120) NOT NULL,
   email VARCHAR(160) NOT NULL UNIQUE,
-  senha_hash VARCHAR(255) NOT NULL,
-  perfil VARCHAR(20) NOT NULL CHECK (perfil IN ('comum', 'ong'))
+
+  validated BOOLEAN NOT NULL
 );
  
 CREATE TABLE material_aceito (
