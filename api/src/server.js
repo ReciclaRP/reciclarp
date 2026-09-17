@@ -1,3 +1,5 @@
+import { Resend } from 'resend';
+
 const fs = require('fs');
 const process = require('node:process');
 
@@ -33,6 +35,8 @@ if(!PG_CONURL || !RESEND_SECRET) {
   process.exit(1);
 }
 
+const resend = new Resend(RESEND_SECRET);
+
 class Tickets {
   constructor() {
     this.tickets = {}
@@ -44,6 +48,7 @@ class Tickets {
 
   new(email) {
     this.tickets[email] = this.__newcode();
+    return this.tickets[email];
   }
 }
 
@@ -127,18 +132,29 @@ class Account {
     );
   }
 
+  async __sendverifmail(email, code) {
+    const { data, error } = await resend.emails.send({
+      from: 'ReciclaRP (Não Responda) <reciclarp-naoresponda@comrades.sbs>',
+      to: [email],
+      subject: 'Seu código de login ReciclaRP',
+      html: `Seu código de login é: ${code}.`,
+    });
+
+    if (error) {
+      return logger.error(`Sending login e-mail to ${email} failed: ${error}`)
+    }
+  }
+
   send_loginmail() {
     if(!this.__is_banned()) {
-      if(this.__is_validated()) {
-        // send normal e-mail
-      } else {
-        // send registration e-mail
-      }
+      const code = ticket_queue.new(this.email);
+      this.__sendverifmail(this.email, code);
     }
   }
 
   ban() {
-
+    this.banned = 1;
+    this.__update();
   }
 }
 
