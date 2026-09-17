@@ -33,6 +33,22 @@ if(!PG_CONURL || !RESEND_SECRET) {
   process.exit(1);
 }
 
+class Tickets {
+  constructor() {
+    this.tickets = {}
+  }
+
+  __newcode() {
+    return Math.floor(Math.random()*90000) + 10000;
+  }
+
+  new(email) {
+    this.tickets[email] = this.__newcode();
+  }
+}
+
+const ticket_queue = Tickets();
+
 class Account {
   constructor(email) {
     this.email = email;
@@ -93,12 +109,32 @@ class Account {
     return false;
   }
 
+  __is_validated() {
+    if(this.validated) {
+      return true;
+    }
+
+    return false;
+  }
+
   __update() {
-  
+    db.prepare(`
+      UPDATE user
+      SET name = ?, email = ?, banned = ?, validated = ?
+      WHERE id = ?
+    `).run(
+      this.name, this.email, this.banned, this.validated
+    );
   }
 
   send_loginmail() {
-
+    if(!this.__is_banned()) {
+      if(this.__is_validated()) {
+        // send normal e-mail
+      } else {
+        // send registration e-mail
+      }
+    }
   }
 
   ban() {
