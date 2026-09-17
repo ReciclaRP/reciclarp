@@ -6,10 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <title>ReciclaRP</title>
+  
+    <style>
+      body {
+        margin: 0;
+        
+        background-image: url("/images/background.png");
+      }
+    </style>
   </head>
 
   <body>
-    <div id="map"></div>
+    <div class="main-content">
+      <div class="logo">
+        <img src="/images/logo.png">
+      </div>
+
+      <div class="loginsection">
+        <div class="login-inputs">
+          <h3>Login e Registro</h3>
+          <input type="email" id="login-email">
+        </div>
+
+        <div class="verif-inputs">
+          <h3>Código de Verificação</h3>
+          <input type="text" class="login-verif">
+          <p><small>Um código de verificação foi encaminhado ao seu e-mail.</small></p>
+        </div>
+
+        <input type="submit" onclick="okPressed();">
+      </div>
+    </div>
   </body>
 
   <script type="module" src="/src/main.js"></script>
