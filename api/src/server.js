@@ -19,7 +19,6 @@ if(!DB_EXISTED) {
 }
 
 const API_PORT = process.env.API_PORT || 3000;
-const PG_CONURL = process.env.PG_CONURL || false;
 
 const RESEND_SECRET = process.env.RESEND_SECRET || false;
 
