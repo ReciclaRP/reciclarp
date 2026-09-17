@@ -5,7 +5,6 @@ const defaultschema = require("./db/schema.js");
 
 const express = require('express');
 const pino = require('pino');
-const Database = require('better-sqlite3');
 
 const app = express();
 const logger = pino();
@@ -13,7 +12,8 @@ const logger = pino();
 const DB_PATH = "recicladb.sqlite";
 const DB_EXISTED = fs.existsSync(DB_PATH);
 
-const db = new Database(DB_PATH);
+const db = require('better-sqlite3')(DB_PATH);
+
 if(!DB_EXISTED) {
   db.exec(defaultschema.__RECICLA_DEFAULT_SCHEMA());
 }
@@ -39,27 +39,62 @@ class Account {
     this.id = 0;
     this.name = "402500915_DEFAULT_NAME";
 
+    this.banned = 0;
+    this.validated = 0;
+
+    this.real_account = false;
+
     if(this.__exists()) {
       this.__get_data();
-    } else if(!this.__is_banned()) {
+    } else {
       this.__create();
     }
   }
 
   __get_data() {
+    const data = db.prepare(
+      'SELECT * FROM user WHERE email = ?'
+    ).get(this.email);
 
+    if(data) {
+      this.id = data.id;
+      this.name = data.name;
+      this.email = data.email;
+      this.banned = data.banned;
+      this.validated = data.validated;
+      this.real_account = true;
+    }
   }
 
   __create() {
+    db.prepare(`
+      INSERT INTO user (name, email, banned, validated)
+      VALUES(?, ?, ?, ?)
+    `).run(this.name, this.email);
 
+    this.__get_data();
   }
 
   __exists() {
+    if(db.prepare(
+      'SELECT * FROM user WHERE email = ?'
+    ).get(this.email)) {
+      return true;
+    }
 
+    return false;
   }
 
   __is_banned() {
+    if(this.banned) {
+      return true;
+    }
 
+    return false;
+  }
+
+  __update() {
+  
   }
 
   send_loginmail() {
