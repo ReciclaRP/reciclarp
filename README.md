@@ -2,7 +2,7 @@
 
 Aplicação web/PWA headless que centraliza pontos de coleta de reciclagem de Ribeirão Preto: moradores consultam e cadastram pontos colaborativamente, e uma ONG modera as contribuições.
 
-O projeto utiliza um único repositório (monorepo), contendo dois projetos independentes:
+Este repositório contém dois projetos independentes que operam entre sí:
 
 - **`webapp/`** — aplicação web/PWA headless, desenvolvida com Vite e tecnologias web padrão, sem React;
 - **`api/`** — API REST, desenvolvida com Node.js + Express.js.
@@ -10,6 +10,7 @@ O projeto utiliza um único repositório (monorepo), contendo dois projetos inde
 **Deploy:** Previsto para a Sprint 4 (E8, Semana 12, 30/10/2026)
 
 **Equipe:**
+
 - Adrian Souza Teixeira (RA 2840482421051)
 - Heitor Benedetti Lopes (RA 2840482421003)
 - Victor Breno Anastácio de Matos (RA 2840482313038)
@@ -18,36 +19,19 @@ O projeto utiliza um único repositório (monorepo), contendo dois projetos inde
 
 ### `webapp`
 
-- PWA headless;
-- Vite;
-- HTML, CSS e JavaScript;
-- APIs padrão do navegador;
-- OpenStreetMap para visualização das localizações.
-
-O Vite é utilizado como ferramenta de desenvolvimento e build da aplicação web.
+Aplicação web escrita em JavaScript, utilizando o sistema de build Vite. Não utiliza nenhum framework para além disto; o OpenStreetMap é utilizado para visualização das localizações. 
 
 ### `api`
 
-- Node.js;
-- Express.js;
-- API REST;
-- PostgreSQL 15+.
+Uma API em Express.js, utilizando um banco de dados SQLite;
 
-A API concentra autenticação, autorização, regras de negócio, validações e acesso ao banco de dados.
+A API concentra autenticação, autorização, regras de negócio, validações e acesso ao banco de dados. Ela compõe o backend completo do ReciclaRP.
 
 ### Banco de dados
 
-O modelo PostgreSQL está em `db/schema.sql`.
+O banco de dados utilizado pelo projeto é o SQLite, um banco de dados maduro ideal para operações *in-memory* realizadas dentro de um mesmo host.
 
-As tabelas atualmente especificadas são:
-
-- `usuario`
-- `material_aceito`
-- `ponto_coleta`
-- `ponto_material`
-- `horario_funcionamento`
-- `requisicao_cadastro`
-- `relato_problema`
+`db/schema.sql` contém o schema do banco. Ele é atualizado manualmente para questões de referência, e **não é o schema vigente**; este se encontra em `api/src/db/schema.js`
 
 ## Como rodar localmente
 
@@ -55,10 +39,13 @@ As tabelas atualmente especificadas são:
 
 - Node.js 20+;
 - npm;
-- PostgreSQL 15+;
 - navegador moderno.
 
 ### API
+
+Primeiro, defina a porta por qual a API irá interagir por meio da variável de ambiente `RECICLA_API_PORT`. (ex `export RP_API_PORT="5000"`). [at.]
+
+Depois, defina a chave de API da plataforma Resend, utilizada para o envío de e-mails de autenticação, por meio da variável de ambiente `RECICLA_RESEND_SECRET`. **Sem esta chave, o programa irá operar no "modo convidado", sem controles reais de autenticação.**
 
 Entre no projeto:
 
@@ -68,11 +55,11 @@ npm install
 npm run dev
 ```
 
-Os scripts e variáveis de ambiente definitivos serão mantidos em `api/package.json` e `api/.env.example`.
+A API produzirá uma URL, ex. `http://localhost:3000/`. **Defina a variável de ambiente `RECICLA_API_URL` a partir desta** (ex. rode o comando `export RECICLA_API_URL="http://localhost:3000/"` conforme o caso anterior).
 
 ### Webapp
 
-Em outro terminal:
+Com a variável de ambiente `RECICLA_API_URL` definida, execute em outro terminal:
 
 ```bash
 cd webapp
@@ -80,22 +67,18 @@ npm install
 npm run dev
 ```
 
-O `webapp` consumirá a API REST conforme a URL configurada no ambiente de desenvolvimento.
+Abra o URL resultante em seu navegador.
 
-As portas definitivas serão estabelecidas durante a implementação.
+[at.]: Este projeto terá apoio à arquivos .env, mas as convenções para consumí-los ainda devem ser definidas.
 
 ## Estrutura do repositório
 
 ```
-/backend    - API REST (Express), acesso a dados, regras de negócio
-/frontend   - PWA em React (manifest, service worker)
-/db         - schema.sql (E3c), fiel ao DER da E3b
-/docs       - documento de visão (E1), backlog e termo de aceite (E2), UML e DER (E3), plano de testes (E4)
+/webapp     - API REST (Express), acesso a dados, regras de negócio
+/frontend   - PWA em Vite
+/db         - schema.sql, somente para referência
+/docs       - documentação acadêmica
 ```
-
-## Banco de dados
-
-`db/schema.sql` contém o schema do banco. Ele é atualizado manualmente para questões de referência, e **não é o schema vigente**; este se encontra em `api/src/db/schema.js`
 
 ## Testes
 
@@ -107,14 +90,17 @@ Os testes da aplicação web verificam os fluxos de utilização e o comportamen
 
 Os testes unitários e de integração da API verificam regras de negócio, rotas, validações e persistência.
 
-Nenhum PR que introduza alterações cobertas pelos testes deverá ser integrado em `main` se a suíte correspondente falhar.
+Nenhum PR que introduza alterações cobertas pelos testes deverá ser integrado em `main` se a suíte correspondente falhar após o PO decretar que o status de MVP foi atingido.
 
 ## Convenções da equipe
 
-- Branches: `feature/nome-da-feature`;
-- Commits: Conventional Commits, com destacamento de *breaking changes* ignorado (`feat:`, `fix:`, `docs:`, `test:`, sem `feat!`);
-- Toda PR exige revisão do PO (Lopes; HLRangel) antes da integração no `main`;
-- PO pode realizar merges de forma unilateral; e pode também fazer commits de forma direta no caso de bugs de alta severidade/exposição de segredos.
+- **Branches:** `semana/<número da semana de desenvolvimento>` [at. 1];
+- **Commits:** Conventional Commits, com destacamento de *breaking changes* ignorado (`feat:`, `fix:`, `docs:`, `test:`, sem `feat!`);
+- **Toda PR exige revisão do PO** (Lopes; HLRangel) antes da integração no `main`;
+- **PO pode realizar merges de forma unilateral**; e pode também fazer commits de forma direta no caso de bugs de alta severidade/exposição de segredos.
+- **Decreto de MVP**: O PO decreta que o software atingiu o estado de MVP quando o programa atingir um nível suficiente de maturidade funcional. Após este decreto, o bloqueio de merge por falha nos testes entra em vigor.
+
+[at. 1]: Na primeira semana de desenvolvimento, utilizamos uma outra convenção para a nomeação de branches, que agora se encontra **deprecada**.
 
 ## Documentação acadêmica
 
@@ -127,6 +113,8 @@ Nenhum PR que introduza alterações cobertas pelos testes deverá ser integrado
 - `docs/prototipo.md` — roteiro do protótipo;
 - `docs/rastreabilidade.md` — matriz de rastreabilidade.
 
+**O SOFTWARE ESTÁ EM DESENVOLVIMENTO ATIVO, E PODE DIVERGIR DA ESPECIFICAÇÃO!**
+
 A divisão em `webapp` e `api` é uma decisão arquitetural dentro do mesmo repositório e não altera o escopo funcional do backlog.
 
 ## Licença / Uso acadêmico
@@ -138,3 +126,8 @@ O ReciclaRP foi desenvolvido em 2026, por: Heitor Lopes (HLRangel), Adrian Teixe
 Você deve ter recebido uma cópia da licença juntamente com este software. Caso contrário, consulte https://www.gnu.org/licenses/agpl-3.0.html.
 
 **ESTE SOFTWARE É FORNECIDO EXPRESSAMENTE "NO ESTADO EM QUE SE ENCONTRA". OS DESENVOLVEDORES NÃO OFERECEM QUALQUER TIPO DE GARANTIA, SEJA EXPRESSA, IMPLÍCITA, DE FATO OU DECORRENTE DE DISPOSIÇÃO LEGAL, INCLUINDO, SEM LIMITAÇÃO, AS GARANTIAS IMPLÍCITAS DE COMERCIABILIDADE, ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA, NÃO VIOLAÇÃO E PRECISÃO DOS DADOS.**
+
+
+## Atribuição
+
+Esta aplicação distribui fontes. Suas licenças respectivas podem ser encontradas em `webapp/fonts/<nome da fonte>/<nome da licença>`.

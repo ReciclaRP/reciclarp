@@ -20,9 +20,9 @@ if(!DB_EXISTED) {
   db.exec(defaultschema.__RECICLA_DEFAULT_SCHEMA());
 }
 
-const API_PORT = process.env.API_PORT || 3000;
+const API_PORT = process.env.RECICLA_API_PORT || 3000;
 
-const RESEND_SECRET = process.env.RESEND_SECRET || false;
+const RESEND_SECRET = process.env.RECICLA_RESEND_SECRET || false;
 
 if(!PG_CONURL || !RESEND_SECRET) {
   var errst = "The following environment variables were not privided:";
