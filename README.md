@@ -131,3 +131,5 @@ Você deve ter recebido uma cópia da licença juntamente com este software. Cas
 ## Atribuição
 
 Esta aplicação distribui fontes. Suas licenças respectivas podem ser encontradas em `webapp/fonts/<nome da fonte>/<nome da licença>`.
+
+As licenças de dependências de terceiros incluídas nesta aplicação podem ser encontradas em `api/third-party-licenses.txt` e `webapp/third-party-licenses.txt`.
