@@ -95,9 +95,7 @@ As portas definitivas serão estabelecidas durante a implementação.
 
 ## Banco de dados
 
-`db/schema.sql` contém o schema do banco e um seed mínimo.
-
-A aplicação `webapp` não acessa o PostgreSQL diretamente. Todo acesso persistente é realizado pela `api`.
+`db/schema.sql` contém o schema do banco. Ele é atualizado manualmente para questões de referência, e **não é o schema vigente**; este se encontra em `api/src/db/schema.js`
 
 ## Testes
 
@@ -135,10 +133,8 @@ A divisão em `webapp` e `api` é uma decisão arquitetural dentro do mesmo repo
 
 Projeto desenvolvido para a disciplina de Laboratório de Engenharia de Software - ADS, Fatec Ribeirão Preto, 2026.
 
-O ReciclaRP foi desenvolvido em 2026, por: Heitor Lopes (HLRangel), Adrian Teixeira (adriansouza05), e Victor Breno.
+O ReciclaRP foi desenvolvido em 2026, por: Heitor Lopes (HLRangel), Adrian Teixeira (adriansouza05), e Victor Breno. Ele está sobre a licença **GNU Affero General Public License**, V3.
 
-Na medida do permitido pela legislação vigente, os autores dedicam ao domínio público, por meio da dedicação Creative Commons Zero 1.0 Universal (CC0), todos os direitos autorais e direitos conexos relativos a esta obra, renunciando não apenas seus direitos sobre a obra na legislação brasileira, mas também em legislações do exterior e na lei internacional, especialmente os direitos relacionados aos tratados WIPO e a Convenção de Berna.
-
-Você deve ter recebido uma cópia da dedicação Creative Commons Zero 1.0 Universal (CC0) juntamente com este software. Caso contrário, consulte https://creativecommons.org.
+Você deve ter recebido uma cópia da licença juntamente com este software. Caso contrário, consulte https://www.gnu.org/licenses/agpl-3.0.html.
 
 **ESTE SOFTWARE É FORNECIDO EXPRESSAMENTE "NO ESTADO EM QUE SE ENCONTRA". OS DESENVOLVEDORES NÃO OFERECEM QUALQUER TIPO DE GARANTIA, SEJA EXPRESSA, IMPLÍCITA, DE FATO OU DECORRENTE DE DISPOSIÇÃO LEGAL, INCLUINDO, SEM LIMITAÇÃO, AS GARANTIAS IMPLÍCITAS DE COMERCIABILIDADE, ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA, NÃO VIOLAÇÃO E PRECISÃO DOS DADOS.**
