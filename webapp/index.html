@@ -8,10 +8,17 @@
     <title>ReciclaRP</title>
   
     <style>
+      @font-face {
+        font-family: "Atkinson Hyperlegible Next";
+        src: url(/fonts/Atkinson_Hyperlegible_Next/AtkinsonHyperlegibleNext-VariableFont_wght.ttf);
+      }
+
+
       body {
         margin: 0;
         
         background-image: url("/images/background.png");
+        font-family: "Atkinson Hyperlegible Next";
       }
 
       .main-content {
@@ -44,6 +51,10 @@
         margin-top: 20px;
       }
 
+      #id-verif-inputs {
+        display: none;
+      }
+
       .verif-inputs .advice-text {
         width: 200px;
         margin: auto;
@@ -59,6 +70,7 @@
       }
 
       .loginsection input[type="submit"] {
+        margin-top: 10px;
         padding: 10px 10px 10px 10px;
         
         border-radius: 6px;
@@ -89,7 +101,7 @@
             <input type="email" id="login-email">
           </div>
 
-          <div class="verif-inputs">
+          <div class="verif-inputs" id="id-verif-inputs">
             <h3>Código de Verificação</h3>
             <input type="text" class="login-verif">
             
@@ -98,11 +110,12 @@
             </div>
           </div>
 
-          <input type="submit" onclick="okPressed();">
+          <input type="submit" onclick="okPressed()">
         </div>
       </div>
     </div>
   </body>
 
-  <script type="module" src="/src/main.js"></script>
+  <!--seems like type="module" changes things / drops into node! -->
+  <script type="text/javascript" src="/src/main.js"></script>
 </html>
