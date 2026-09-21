@@ -1,10 +1,18 @@
 # RP Recicla
 
+[Branch de Desenvolvimento](https://github.com/ReciclaRP/reciclarp/tree/semana/2)
+[Painel de Rastreamento](https://github.com/orgs/ReciclaRP/projects/1/views/1)
+[Protótipo do Figma](https://www.figma.com/design/VpJQCMN1ncZQrlraGeXbfb/Trabalho-do-Lucas?node-id=0-1&t=VMZweitYrp64vKfi-1)
+
+**ATENÇÃO ATENÇÃO ATENÇÃO (　ﾟДﾟ)＜!! Leia este arquivo antes de trabalhar no projeto, ele contém informações importantes escritas por mãos humanas!**
+
+---
+
 Aplicação web/PWA headless que centraliza pontos de coleta de reciclagem de Ribeirão Preto: moradores consultam e cadastram pontos colaborativamente, e uma ONG modera as contribuições.
 
 Este repositório contém dois projetos independentes que operam entre sí:
 
-- **`webapp/`** — aplicação web/PWA headless, desenvolvida com Vite e tecnologias web padrão, sem React;
+- **`webapp/`** — aplicação web/PWA headless, desenvolvida com Vite e tecnologias web padrão;
 - **`api/`** — API REST, desenvolvida com Node.js + Express.js.
 
 **Deploy:** Previsto para a Sprint 4 (E8, Semana 12, 30/10/2026)
@@ -95,7 +103,7 @@ Nenhum PR que introduza alterações cobertas pelos testes deverá ser integrado
 ## Convenções da equipe
 
 - **Branches:** `semana/<número da semana de desenvolvimento>` [at. 1];
-- **Commits:** Conventional Commits, com destacamento de *breaking changes* ignorado (`feat:`, `fix:`, `docs:`, `test:`, sem `feat!`);
+- **Commits:** [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/), com destacamento de *breaking changes* ignorado (`feat:`, `fix:`, `docs:`, `test:`, sem `feat!`);
 - **Toda PR exige revisão do PO** (Lopes; HLRangel) antes da integração no `main`;
 - **PO pode realizar merges de forma unilateral**; e pode também fazer commits de forma direta no caso de bugs de alta severidade/exposição de segredos.
 - **Decreto de MVP**: O PO decreta que o software atingiu o estado de MVP quando o programa atingir um nível suficiente de maturidade funcional. Após este decreto, o bloqueio de merge por falha nos testes entra em vigor.
