@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="stylesheet" href="/styles/general.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <title>ReciclaRP</title>
+
+    <style>
+      .main-content {
+        margin: auto;
+        width: 90%;
+      }
+
+      .top-user-bar {
+        margin-top: 30px;
+        width: 100vw;
+      }
+
+      .content-row {
+        display: flex;
+        margin: auto;
+
+        width: 90%;
+
+        align-content: center;
+        align-items: center;
+        align-self: center;
+      }
+
+      .content-row a {
+        color: black;
+
+        font-size: 20pt;
+        font-weight: bold;
+        text-decoration: none;
+      }
+
+      .cr-user {
+        margin-left: auto;
+        right: 0;
+      }
+
+      .cblink {
+        text-decoration: none;
+        color: black;
+      }
+
+      .config-box {
+        margin-top: 20px;
+      }
+      .config-box h3 {
+        margin: 0;
+        font-size: 18pt;
+      }
+
+      .config-box p {
+        margin: 0;
+      }
+
+      .iconplustitle {
+        display: flex;
+        
+        align-items: center;
+        align-content: center;
+        align-self: center;
+      }
+
+      .icp-icon {
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="top-user-bar">
+      <div class="content-row">
+        <div class="cr-menu">
+          <a href="#">☰</a>
+        </div>
+
+        <div class="cr-user">
+          <a href="#">Você</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <h1>Configurações e informação</h1>
+
+      <!-- sub. por um template depois... -->
+      <a href="#" class="cblink">
+        <div class="config-box">
+          <div class="iconplustitle">
+            <div class="icp-icon">
+              <img src="/images/testico.png" width="40" height="40">
+            </div>
+
+            <div class="icp-title">
+              <h3>Dicas de reciclagem</h3>
+            </div>
+          </div>
+
+          <p>Veja dicas pelas ONGs cadastradas no aplicativo.</p>
+        </div>
+      </a>
+
+      <a href="#" class="cblink">
+        <div class="config-box">
+          <div class="iconplustitle">
+            <div class="icp-icon">
+              <img src="/images/testico.png" width="40" height="40">
+            </div>
+
+            <div class="icp-title">
+              <h3>Configurações da conta</h3>
+            </div>
+          </div>
+
+          <p>Gerencie seus dados e defina suas preferências</p>
+        </div>
+      </a>
+
+      <a href="#" class="cblink">
+        <div class="config-box">
+          <div class="iconplustitle">
+            <div class="icp-icon">
+              <img src="/images/testico.png" width="40" height="40">
+            </div>
+
+            <div class="icp-title">
+              <h3>Sugerir ponto</h3>
+            </div>
+          </div>
+
+          <p>Sugira a criação de um ponto de coleta.</p>
+        </div>
+      </a>
+    </div>
+  </body>
+
+  <!--seems like type="module" changes things / drops into node! -->
+</html>
