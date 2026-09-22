@@ -58,7 +58,7 @@ body {
     background-color: rgb(0, 0, 0, 0.06);
 }
 
-.loginsection input[type="submit"] {
+input[type="submit"] {
     margin-top: 10px;
     padding: 10px 10px 10px 10px;
 
