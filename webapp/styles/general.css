@@ -12,6 +12,7 @@ body {
 
 .main-content {
     margin: auto;
+    width: 90%;
 }
 
 .login-page-content {
@@ -107,4 +108,68 @@ textarea {
 .problemreportbutton input[type="submit"]:hover {
     background-color: rgba(255, 255, 255, 0.6);
     color: black;
+}
+
+.cblink {
+    text-decoration: none;
+    color: black;
+}
+
+.config-box {
+    margin-top: 20px;
+}
+.config-box h3 {
+    margin: 0;
+    font-size: 18pt;
+}
+
+.config-box p {
+    margin: 0;
+}
+
+.iconplustitle {
+    display: flex;
+
+    align-items: center;
+    align-content: center;
+    align-self: center;
+}
+
+.icp-icon {
+    margin-right: 10px;
+}
+
+.point-entry {
+    margin-bottom: 30px;
+}
+.point-entry h3 {
+    margin: 0;
+}
+
+.point-entry p {
+    margin: 0;
+}
+
+.time-inputs-flex {
+    display: flex;
+}
+
+.time-inputs-flex div {
+    margin-right: 7px;
+}
+
+.point-form input[type="time"] {
+    border-style: solid;
+    border-radius: 2px;
+    border-width: 1px;
+    border-color: black;
+    background-color: rgb(0, 0, 0, 0.06);
+}
+
+.checklabel-flex {
+    display: flex;
+}
+
+.checklabel-flex div {
+    margin-right: 5px;
 }
