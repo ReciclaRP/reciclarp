@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="stylesheet" href="/styles/general.css">
+    <link rel="stylesheet" href="/styles/topbar.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <title>ReciclaRP</title>
+  </head>
+
+  <body>
+    <div class="top-user-bar">
+      <div class="content-row">
+        <div class="cr-menu">
+          <a href="#">☰</a>
+        </div>
+
+        <div class="cr-user">
+          <a href="#">
+            <img src="/images/icons/user.png" height="40" width="40">
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <h1>Criar um novo ponto</h1>
+
+      <div class="point-name">
+        <h2>Ponto nº XX</h2>
+      </div>
+
+      <div class="point-form">
+        <div class="point-entry point-address">
+          <h3>Endereço</h3>
+          
+          <input type="text">
+        </div>
+
+        <div class="point-entry point-time">
+          <h3>Horário de operação</h3>
+
+          <div class="time-inputs-flex">
+            <div>
+              <input type="time">
+            </div>
+
+            <div>
+              —
+            </div>
+
+            <div>
+              <input type="time">
+            </div>
+          </div>
+        </div>
+
+        <div class="point-entry point-types">
+          <h3>Materiais Aceitos</h3>
+          
+          <div class="checklabel-flex">
+            <div>
+              <input type="checkbox">
+            </div>
+
+            <div>
+              <p>PAPEL</p>
+            </div>
+          </div>
+
+          <div class="checklabel-flex">
+            <div>
+              <input type="checkbox">
+            </div>
+
+            <div>
+              <p>METAIS</p>
+            </div>
+          </div>
+
+          <div class="checklabel-flex">
+            <div>
+              <input type="checkbox">
+            </div>
+
+            <div>
+              <p>ORGÂNICOS</p>
+            </div>
+          </div>
+
+          <div class="checklabel-flex">
+            <div>
+              <input type="checkbox">
+            </div>
+
+            <div>
+              <p>BIOLÓGICOS</p>
+            </div>
+          </div>
+        </div>
+
+        <input type="submit" value="Criar">
+      </div>
+    </div>
+  </body>
+
+  <!--seems like type="module" changes things / drops into node! -->
+</html>
