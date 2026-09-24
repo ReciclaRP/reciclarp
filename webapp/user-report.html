@@ -45,68 +45,33 @@
         right: 0;
       }
 
-      .cblink {
-        text-decoration: none;
-        color: black;
-      }
-
-      .config-box {
-        margin-top: 20px;
-      }
-      .config-box h3 {
-        margin: 0;
-        font-size: 18pt;
-      }
-
-      .config-box p {
+      .point-name p {
         margin: 0;
       }
 
-      .iconplustitle {
+      .point-name-hour-flex {
         display: flex;
-        
+
         align-items: center;
         align-content: center;
         align-self: center;
       }
 
-      .icp-icon {
+      .point-name-hour-flex div {
         margin-right: 10px;
       }
 
-      .point-entry {
-        margin-bottom: 30px;
-      }
-      .point-entry h3 {
-        margin: 0;
+      .point-title {
+        font-size: 14pt;
+        font-weight: bold;
       }
 
-      .point-entry p {
-        margin: 0;
+      .ruatal {
+        font-style: italic;
       }
 
-      .time-inputs-flex {
-        display: flex;
-      }
-
-      .time-inputs-flex div {
-        margin-right: 7px;
-      }
-
-      .point-form input[type="time"] {
-        border-style: solid;
-        border-radius: 2px;
-        border-width: 1px;
-        border-color: black;
-        background-color: rgb(0, 0, 0, 0.06);
-      }
-
-      .checklabel-flex {
-        display: flex;
-      }
-
-      .checklabel-flex div {
-        margin-right: 5px;
+      .recpfor {
+        margin-top: 10px;
       }
     </style>
   </head>
@@ -130,7 +95,45 @@
       <h1>Reportar um problema</h1>
 
       <div class="point-name">
-        <h2>Ponto sem numeração</h2>
+        <div class="point-name-hour-flex">
+          <div>
+            <p class="point-title">Ponto nº XX</p>
+          </div>
+
+          <div>
+            🞄
+          </div>
+          
+          <div>
+            <p><span id="tfrom">9:00</span> - <span id="tto">17:00</span></p>
+          </div>
+        </div>
+
+        <div class="ruatal">
+          <p id="raddr">R. Alberto de Oliveira, 1988</p>
+        </div>
+        
+        <div class="recpfor">
+          <p>Ponto de reciclagem de: <span id="itemnames">papel</span></p>
+        </div>
+      </div>
+
+      <h2>Categoria do problema</h2>
+
+      <select id="select-problemas" size="3">
+        <option value="pointabsent">O ponto não existe</option>
+        <option value="pointfull">O ponto está cheio/em manutenção</option>
+        <option value="pointtime">O ponto não funciona no horário correto</option>
+      </select>
+
+      <h2>Descrição do problema</h2>
+
+      <textarea class="report-description-box">
+
+      </textarea>
+
+      <div class="problemreportbutton">
+        <input type="submit" value="Reportar Problema">
       </div>
     </div>
   </body>
