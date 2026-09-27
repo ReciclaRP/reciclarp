@@ -1,0 +1,28 @@
+.top-user-bar {
+    margin-top: 30px;
+    width: 100vw;
+}
+
+.content-row {
+    display: flex;
+    margin: auto;
+
+    width: 90%;
+
+    align-content: center;
+    align-items: center;
+    align-self: center;
+}
+
+.content-row a {
+    color: black;
+
+    font-size: 20pt;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.cr-user {
+    margin-left: auto;
+    right: 0;
+}

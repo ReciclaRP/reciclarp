@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="stylesheet" href="/styles/general.css">
+    <link rel="stylesheet" href="/styles/mappage.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <title>ReciclaRP</title>
+  </head>
+
+  <body>
+    <div class="top-user-bar-blur"></div>
+    <div class="top-user-bar">
+      <div class="content-row">
+        <div class="cr-menu">
+          <a href="#">☰</a>
+        </div>
+
+        <div class="cr-user">
+          <a href="#">
+            <img src="/images/icons/user.png" height="50" width="50">
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="map-div" id="map">
+
+      </div>
+    </div>
+  </body>
+
+  <!--seems like type="module" changes things / drops into node! -->
+  <script type="module" src="/src/map.js"></script>
+</html>
