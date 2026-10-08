@@ -1,4 +1,4 @@
-import { Resend } from 'resend';
+const { Resend } = require('resend');
 
 const fs = require('fs');
 const process = require('node:process');
@@ -24,10 +24,9 @@ const API_PORT = process.env.RECICLA_API_PORT || 3000;
 
 const RESEND_SECRET = process.env.RECICLA_RESEND_SECRET || false;
 
-if(!PG_CONURL || !RESEND_SECRET) {
+if(!RESEND_SECRET) {
   var errst = "The following environment variables were not provided:";
   
-  if(!PG_CONURL) errst += '\nPG_CONURL';
   if(!RESEND_SECRET) errst += '\nRESEND_SECRET';
   
   logger.error(errst);
@@ -62,7 +61,7 @@ class Tickets {
   }
 }
 
-const ticket_queue = Tickets();
+const ticket_queue = new Tickets();
 
 class Account {
   constructor(email) {
@@ -222,7 +221,7 @@ app.use(express.json());
 // Login e Registro
 app.post("/auth/login", (req, res) => {
   if(req.body.email) {
-    var account = Account(req.body.email);
+    var account = new Account(req.body.email);
 
     if(account.__is_banned()) {
       res.json({
@@ -251,7 +250,7 @@ app.post("/auth/login", (req, res) => {
 app.post("/auth/token", (req, res) => {
   if(req.body.email && req.body.code) {
     if(ticket_queue.get(req.body.email) == req.body.code) {
-      let account = Account(req.body.email);
+      let account = new Account(req.body.email);
 
       res.json({
         type: "okay",
@@ -275,7 +274,7 @@ app.post("/auth/token", (req, res) => {
 
 app.post("/auth/check", (req, res) => {
   if(req.body.email && req.body.token) {
-    let account = Account(req.body.email);
+    let account = new Account(req.body.email);
 
     if(account.token_read() == req.body.token) {
       res.json({
@@ -306,6 +305,6 @@ app.get('/api/ping', (req, res) => {
   res.text("pong!");
 });
 
-app.listen(PORT, () => {
-  console.log(`API running on http://localhost:${PORT}`);
+app.listen(API_PORT, () => {
+  console.log(`API running on http://localhost:${API_PORT}`);
 });
