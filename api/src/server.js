@@ -1,4 +1,4 @@
-import { Resend } from 'resend';
+const { Resend } = require('resend');
 
 const fs = require('fs');
 const process = require('node:process');
@@ -24,10 +24,9 @@ const API_PORT = process.env.RECICLA_API_PORT || 3000;
 
 const RESEND_SECRET = process.env.RECICLA_RESEND_SECRET || false;
 
-if(!PG_CONURL || !RESEND_SECRET) {
-  var errst = "The following environment variables were not privided:";
+if(!RESEND_SECRET) {
+  var errst = "The following environment variables were not provided:";
   
-  if(!PG_CONURL) errst += '\nPG_CONURL';
   if(!RESEND_SECRET) errst += '\nRESEND_SECRET';
   
   logger.error(errst);
@@ -37,22 +36,32 @@ if(!PG_CONURL || !RESEND_SECRET) {
 
 const resend = new Resend(RESEND_SECRET);
 
+const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 class Tickets {
   constructor() {
     this.tickets = {}
   }
 
   __newcode() {
-    return Math.floor(Math.random()*90000) + 10000;
+    return String(Math.floor(Math.random()*90000) + 10000);
   }
 
   new(email) {
     this.tickets[email] = this.__newcode();
     return this.tickets[email];
   }
+
+  get(email) {
+    if(email in this.tickets) {
+      return this.tickets[email];
+    } else {
+      return false;
+    }
+  }
 }
 
-const ticket_queue = Tickets();
+const ticket_queue = new Tickets();
 
 class Account {
   constructor(email) {
@@ -62,14 +71,41 @@ class Account {
 
     this.banned = 0;
     this.validated = 0;
+  
+    this.tokenstring = "EBAD";
 
     this.real_account = false;
 
     if(this.__exists()) {
       this.__get_data();
     } else {
-      this.__create();
+      if(this.__email_valid()) {
+        this.__create();
+      } else {
+        this.ban();
+      }
     }
+  }
+
+  __create_token() {
+    let toknums = new Uint32Array(4);
+    let tok = "";
+
+    crypto.getRandomValues(toknums);
+    
+    for(let num of toknums) {
+      tok += String(num)
+    }
+
+    this.tokenstring = tok;
+  }
+
+  __email_valid() {
+    if(String(this.email).match(EMAIL_REGEX)) {
+      return true;
+    }
+
+    return false;
   }
 
   __get_data() {
@@ -156,27 +192,119 @@ class Account {
     this.banned = 1;
     this.__update();
   }
+
+  token() {
+    this.__create_token();
+
+    return this.tokenstring;
+  }
+
+  token_read() {
+    return this.tokenstring;
+  }
+
+  get_email() {
+    return this.email;
+  }
+
+  get_name() {
+    return this.name;
+  }
+
+  get_id() {
+    return this.id;
+  }
 }
 
 app.use(express.json());
 
-function send_email() {
-
-}
-
 // Login e Registro
-app.post("/auth/login", (req, res) = {
+app.post("/auth/login", (req, res) => {
+  if(req.body.email) {
+    var account = new Account(req.body.email);
 
+    if(account.__is_banned()) {
+      res.json({
+        type: "error",
+
+        description: "The e-mail provided was unactionable."
+      });
+    } else {
+      account.send_loginmail();
+
+      res.json({
+        type: "okay",
+
+        description: "Action has been taken."
+      })
+    } 
+  } else {
+    res.json({
+      type: "error",
+
+      description: "Malformed request."
+    })
+  }
 });
 
 app.post("/auth/token", (req, res) => {
+  if(req.body.email && req.body.code) {
+    if(ticket_queue.get(req.body.email) == req.body.code) {
+      let account = new Account(req.body.email);
 
+      res.json({
+        type: "okay",
+        token: account.token()
+      });
+    } else {
+      res.json({
+        type: "error",
+
+        description: "Incorrect code."
+      })
+    }
+  } else {
+    res.json({
+      type: "error",
+
+      description: "Malformed request."
+    })
+  }
+});
+
+app.post("/auth/check", (req, res) => {
+  if(req.body.email && req.body.token) {
+    let account = new Account(req.body.email);
+
+    if(account.token_read() == req.body.token) {
+      res.json({
+        type: "okay",
+
+        email: account.get_email(),
+        name: account.get_name(),
+        id: account.get_id(),
+        banned: account.__is_banned()
+      });
+    } else {
+      res.json({
+        type: "error",
+
+        description: "Incorrect authentication information was provided."
+      })
+    }
+  } else {
+    res.json({
+      type: "error",
+
+      description: "Malformed request"
+    });
+  }
 });
 
 app.get('/api/ping', (req, res) => {
   res.text("pong!");
 });
 
-app.listen(PORT, () => {
-  console.log(`API running on http://localhost:${PORT}`);
+app.listen(API_PORT, () => {
+  console.log(`API running on http://localhost:${API_PORT}`);
 });

@@ -1,0 +1,17 @@
+{
+  "name": "cli",
+  "private": "true",
+  "version": "0.0.1",
+  "description": "CLI para a API ReciclaRP",
+  "keywords": [
+    "cli",
+    "reciclarp"
+  ],
+  "license": "AGPL-3.0-only",
+  "author": "HLRangel",
+  "type": "commonjs",
+  "main": "main.js",
+  "scripts": {
+    "test": "node main.js"
+  }
+}
