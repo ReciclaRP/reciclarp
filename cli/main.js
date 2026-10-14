@@ -18,3 +18,5 @@ async function get_login_code(email) {
 
     return await res.json();
 }
+
+get_login_code("benedettilopes0@gmail.com");

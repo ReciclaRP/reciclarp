@@ -127,7 +127,7 @@ class Account {
     db.prepare(`
       INSERT INTO user (name, email, banned, validated)
       VALUES(?, ?, ?, ?)
-    `).run(this.name, this.email);
+    `).run(this.name, this.email, 0, 0);
 
     this.__get_data();
   }
