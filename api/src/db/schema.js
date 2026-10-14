@@ -12,6 +12,7 @@ function __RECICLA_DEFAULT_SCHEMA() {
 
         CREATE TABLE point(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            pointdescription TEXT NOT NULL,
 
             lat REAL NOT NULL,
             lon REAL NOT NULL,
