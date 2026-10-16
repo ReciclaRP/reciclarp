@@ -6,16 +6,16 @@ function __RECICLA_DEFAULT_SCHEMA() {
             email VARCHAR(160) NOT NULL UNIQUE,
 
             banned BOOLEAN NOT NULL DEFAULT 0,
-            validated BOOLEAN NOT NULL DEFAULT 0
+            validated BOOLEAN NOT NULL DEFAULT 0,
             ong BOOLEAN NOT NULL DEFAULT 0
         );
 
         CREATE TABLE point(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            pid INTEGER PRIMARY KEY AUTOINCREMENT,
             pointdescription TEXT NOT NULL,
 
-            lat REAL NOT NULL,
-            lon REAL NOT NULL,
+            lati REAL NOT NULL,
+            long REAL NOT NULL,
 
             time_open TEXT NOT NULL,
             time_close TEXT NOT NULL,
@@ -23,12 +23,17 @@ function __RECICLA_DEFAULT_SCHEMA() {
             accepts_paper BOOLEAN NOT NULL DEFAULT 0,
             accepts_metal BOOLEAN NOT NULL DEFAULT 0,
             accepts_organic BOOLEAN NOT NULL DEFAULT 0,
-            accepts_biological BOOLEAN NOT NULL DEFAULT 0
+            accepts_biological BOOLEAN NOT NULL DEFAULT 0,
 
             approved BOOLEAN NOT NULL DEFAULT 0,
+            creator INTEGER NOT NULL,
             FOREIGN KEY(creator) REFERENCES user(id)
         );
     `;
+}
+
+function __RECICLA_ADMIN_SEED() {
+    return ["Admin", 0, 1, 1];
 }
 
 function __RECICLA_POINT_SEED() {
@@ -41,10 +46,11 @@ function __RECICLA_POINT_SEED() {
         ["Ecoponto 6 - Jardim São Fernando",            -21.272251456099387,    -47.8146350209524,      "7:00", "19:00", 1, 1, 0, 0, 1, 0],
         ["Ecoponto 7 - Adelino Semioni",                -21.11835626123413,     -47.801027534177855,    "7:00", "19:00", 1, 1, 0, 0, 1, 0],
         ["Ecoponto 8 - Jardim Diva Tarlá de Carvalho",  -21.13065783047139,     -47.74219426140682,     "7:00", "19:00", 1, 1, 0, 0, 1, 0]
-    ]
+    ];
 }
 
 module.exports = {
     __RECICLA_DEFAULT_SCHEMA,
-    __RECICLA_POINT_SEED
+    __RECICLA_POINT_SEED,
+    __RECICLA_ADMIN_SEED
 }
