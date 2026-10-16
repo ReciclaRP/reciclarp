@@ -19,4 +19,24 @@ async function get_login_code(email) {
     return await res.json();
 }
 
+async function get_point_list() {
+    let res = await fetch(
+        `${APP_URL}/point/list`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+                data: "test"
+            })
+        }
+    )
+
+    return await res.json();
+}
+
 get_login_code("benedettilopes0@gmail.com");
+get_point_list();
