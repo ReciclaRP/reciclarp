@@ -20,7 +20,15 @@ async function pullMapData() {
     return await res.json();
 }
 
-function createMap(element, latitude, longitude, zoom = 13) {
+async function putMapMarkers(map) {
+    let data = await pullMapData();
+
+    for(let point of data) {
+        L.marker([point.lati, point.long]).addTo(map);
+    }
+}
+
+async function createMap(element, latitude, longitude, zoom = 13) {
     const map = L.map(element).setView(
         [latitude, longitude],
         zoom
@@ -34,13 +42,15 @@ function createMap(element, latitude, longitude, zoom = 13) {
         }
     ).addTo(map);
 
+    await putMapMarkers(map);
+
     return map;
 }
 
-createMap(
+await createMap(
     document.querySelector('#map'),
-    -23.5505,
-    -46.6333
+    -21.1684, 
+    -47.8109
 );
 
 console.log(await pullMapData());
