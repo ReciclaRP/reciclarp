@@ -20,13 +20,42 @@ async function pullMapData() {
     return await res.json();
 }
 
-function openPointPopup(point) {
+function openPointPopup(point, x, y) {
     let popup = document.getElementById("location-popup");
+    let acceptedkinds = "";
+
+    if(point.accepts_biological == 1) {
+        acceptedkinds += "biológicos"
+    }
+
+    if(point.accepts_metal == 1) {
+        if(acceptedkinds != "") {
+            acceptedkinds += ", ";
+        }
+        acceptedkinds += "metal";
+    }
+
+    if(point.accepts_organic == 1) {
+        if(acceptedkinds != "") {
+            acceptedkinds += ", ";
+        }
+        acceptedkinds += "orgânicos";
+    }
+
+    if(point.accepts_paper == 1) {
+        if(acceptedkinds != "") {
+            acceptedkinds += ", ";
+        }
+        acceptedkinds += "papel";
+    }
+
+    acceptedkinds += ".";
+
     popup.innerHTML = `
     <div class="popup-content">
         <div class="popup-nametime">
             <div>
-                <h3>Ponto nº XX</h3>
+                <h3>Ponto nº ${point.pid}</h3>
             </div>
 
             <div>
@@ -34,23 +63,23 @@ function openPointPopup(point) {
             </div>
 
             <div>
-                <p>9:00 - 17:00</p>
+                <p>${point.time_open} - ${point.time_close}</p>
             </div>
 
             <div>
                 <p>Aberto</p>
             </div>
-            </div>
+        </div>
 
-            <div class="popup-address">
-            <p>R. Alberto de Oliveira, 1988</p>
-            </div>
+        <div class="popup-address">
+            <p>${point.pointdescription}</p>
+        </div>
 
-            <div class="popup-kinds">
-            <p>Ponto de reciclagem de: <span id="popup-kid-list">papel</span>.</p>
-            </div>
+        <div class="popup-kinds">
+            <p>Ponto de reciclagem de: <span id="popup-kid-list">${acceptedkinds}</span></p>
+        </div>
 
-            <div class="button-options">
+        <div class="button-options">
             <div>
                 <a href="#" class="maps-open-button">Abrir no Maps</a>
             </div>
@@ -66,6 +95,8 @@ function openPointPopup(point) {
     </div>`;
 
     popup.style.display = "block";
+    popup.style.left = x+'px';
+    popup.style.top = y+'px';
 }
 
 async function markerClicked(e) {
@@ -73,7 +104,8 @@ async function markerClicked(e) {
 
     for(let point of data) {
         if(point.lati == e.latlng.lat && point.long == e.latlng.lng) {
-            openPointPopup(point);
+            console.log(point)
+            openPointPopup(point, e.containerPoint.x, e.containerPoint.y);
         }
     }
 }
