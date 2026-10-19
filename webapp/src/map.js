@@ -20,11 +20,30 @@ async function pullMapData() {
     return await res.json();
 }
 
-async function putMapMarkers(map) {
+function openPointPopup(point) {
+
+}
+
+async function markerClicked(e) {
     let data = await pullMapData();
 
     for(let point of data) {
-        L.marker([point.lati, point.long]).addTo(map);
+        if(point.lati == e.latlng.lat && point.long == e.latlng.lng) {
+            console.log(point);
+        }
+    }
+}
+
+async function putMapMarkers(map, clickedfunction) {
+    let data = await pullMapData();
+
+    for(let point of data) {
+        L.marker([point.lati, point.long])
+            .addTo(map)
+            .on(
+                'click', 
+                clickedfunction
+            );
     }
 }
 
@@ -42,7 +61,7 @@ async function createMap(element, latitude, longitude, zoom = 13) {
         }
     ).addTo(map);
 
-    await putMapMarkers(map);
+    await putMapMarkers(map, markerClicked);
 
     return map;
 }
