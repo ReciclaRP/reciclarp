@@ -7,6 +7,7 @@ const defaultschema = require("./db/schema.js");
 
 const express = require('express');
 const pino = require('pino');
+const cors = require('cors');
 
 const app = express();
 const logger = pino();
@@ -17,6 +18,10 @@ const DB_EXISTED = fs.existsSync(DB_PATH);
 const db = require('better-sqlite3')(DB_PATH);
 
 require('dotenv').config();
+
+app.use(cors({
+  origin: 'http://localhost:5173',
+}));
 
 if(!DB_EXISTED) {
   const ADMIN_EMAIL = process.env.RECICLA_ADMIN_EMAIL || "test@example.com";
