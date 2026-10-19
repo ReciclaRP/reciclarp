@@ -21,7 +21,51 @@ async function pullMapData() {
 }
 
 function openPointPopup(point) {
+    let popup = document.getElementById("location-popup");
+    popup.innerHTML = `
+    <div class="popup-content">
+        <div class="popup-nametime">
+            <div>
+                <h3>Ponto nº XX</h3>
+            </div>
 
+            <div>
+                ●
+            </div>
+
+            <div>
+                <p>9:00 - 17:00</p>
+            </div>
+
+            <div>
+                <p>Aberto</p>
+            </div>
+            </div>
+
+            <div class="popup-address">
+            <p>R. Alberto de Oliveira, 1988</p>
+            </div>
+
+            <div class="popup-kinds">
+            <p>Ponto de reciclagem de: <span id="popup-kid-list">papel</span>.</p>
+            </div>
+
+            <div class="button-options">
+            <div>
+                <a href="#" class="maps-open-button">Abrir no Maps</a>
+            </div>
+
+            <div>
+                <a href="#">Reportar Problema</a>
+            </div>
+
+            <div>
+                <a href="#">Sugerir edição</a>
+            </div>
+        </div>
+    </div>`;
+
+    popup.style.display = "block";
 }
 
 async function markerClicked(e) {
@@ -29,7 +73,7 @@ async function markerClicked(e) {
 
     for(let point of data) {
         if(point.lati == e.latlng.lat && point.long == e.latlng.lng) {
-            console.log(point);
+            openPointPopup(point);
         }
     }
 }
