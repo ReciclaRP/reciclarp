@@ -52,7 +52,7 @@ O banco de dados utilizado pelo projeto é o SQLite, um banco de dados maduro id
 
 ### API
 
-Primeiro, defina a porta por qual a API irá interagir por meio da variável de ambiente `RECICLA_API_PORT`. (ex `export RP_API_PORT="5000"`). [at.]
+Primeiro, defina a porta por qual a API irá interagir por meio da variável de ambiente `RECICLA_API_PORT`. (ex `export RP_API_PORT="5000"`).
 
 Depois, defina a chave de API da plataforma Resend, utilizada para o envío de e-mails de autenticação, por meio da variável de ambiente `RECICLA_RESEND_SECRET`. **Sem esta chave, o programa irá operar no "modo convidado", sem controles reais de autenticação.**
 
@@ -66,6 +66,8 @@ npm run dev
 
 A API produzirá uma URL, ex. `http://localhost:3000/`. **Defina a variável de ambiente `RECICLA_API_URL` a partir desta** (ex. rode o comando `export RECICLA_API_URL="http://localhost:3000/"` conforme o caso anterior).
 
+A API lerá arquivos contendo variáveis de ambiente colocados em seu diretório raiz (`api/.env` relativo a raiz do repositório).
+
 ### Webapp
 
 Com a variável de ambiente `RECICLA_API_URL` definida, execute em outro terminal:
@@ -78,13 +80,14 @@ npm run dev
 
 Abra o URL resultante em seu navegador.
 
-[at.]: Este projeto terá apoio à arquivos .env, mas as convenções para consumí-los ainda devem ser definidas.
+O webapp lerá arquivos contendo variáveis de ambiente colocados em seu diretório raiz (`webapp/.env` relativo a raiz do repositório).
 
 ## Estrutura do repositório
 
 ```
 /webapp     - API REST (Express), acesso a dados, regras de negócio
 /frontend   - PWA em Vite
+/cli        - Pequeno programa utilizado para interagir com a API. Pode ser ignorado.
 /db         - schema.sql, somente para referência
 /docs       - documentação acadêmica
 ```
@@ -135,7 +138,6 @@ O ReciclaRP foi desenvolvido em 2026, por: Heitor Lopes (HLRangel), Adrian Teixe
 Você deve ter recebido uma cópia da licença juntamente com este software. Caso contrário, consulte https://www.gnu.org/licenses/agpl-3.0.html.
 
 **ESTE SOFTWARE É FORNECIDO EXPRESSAMENTE "NO ESTADO EM QUE SE ENCONTRA". OS DESENVOLVEDORES NÃO OFERECEM QUALQUER TIPO DE GARANTIA, SEJA EXPRESSA, IMPLÍCITA, DE FATO OU DECORRENTE DE DISPOSIÇÃO LEGAL, INCLUINDO, SEM LIMITAÇÃO, AS GARANTIAS IMPLÍCITAS DE COMERCIABILIDADE, ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA, NÃO VIOLAÇÃO E PRECISÃO DOS DADOS.**
-
 
 ## Atribuição
 
