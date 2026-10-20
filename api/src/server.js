@@ -47,13 +47,7 @@ const API_PORT = process.env.RECICLA_API_PORT || 3000;
 const RESEND_SECRET = process.env.RECICLA_RESEND_SECRET || false;
 
 if(!RESEND_SECRET) {
-  var errst = "The following environment variables were not provided:";
-  
-  if(!RESEND_SECRET) errst += '\nRESEND_SECRET';
-  
-  logger.error(errst);
-
-  process.exit(1);
+  logger.error("Environment variable RECICLA_RESEND_SECRET is not set. OTC auth codes will be put to the logs.");
 }
 
 const resend = new Resend(RESEND_SECRET);
@@ -191,16 +185,22 @@ class Account {
   }
 
   async __sendverifmail(email, code) {
-    const { data, error } = await resend.emails.send({
-      from: 'ReciclaRP (Não Responda) <reciclarp-naoresponda@comrades.sbs>',
-      to: [email],
-      subject: 'Seu código de login ReciclaRP',
-      html: `Seu código de login é: ${code}.`,
-    });
+    if(RESEND_SECRET) {
+      const { data, error } = await resend.emails.send({
+        from: 'ReciclaRP (Não Responda) <reciclarp-naoresponda@comrades.sbs>',
+        to: [email],
+        subject: 'Seu código de login ReciclaRP',
+        html: `Seu código de login é: ${code}.`,
+      });
 
-    if (error) {
-      return logger.error(`Sending login e-mail to ${email} failed: ${error}`)
+      if (error) {
+        return logger.error(`Sending login e-mail to ${email} failed: ${error}`)
+      }
+    } else {
+      logger.error(`RECICLA_RESEND_SECRET is not available. The login code for ${email} was ${code}.`);
     }
+
+    return true;
   }
 
   send_loginmail() {
