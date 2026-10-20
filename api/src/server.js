@@ -19,8 +19,12 @@ const db = require('better-sqlite3')(DB_PATH);
 
 require('dotenv').config();
 
+const API_PORT = process.env.RECICLA_API_PORT || 3000;
+const RESEND_SECRET = process.env.RECICLA_RESEND_SECRET || false;
+const WEBAPP_URL = process.env.RECICLA_WEBAPP_URL || 'http://localhost:5173';
+
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: WEBAPP_URL,
 }));
 
 if(!DB_EXISTED) {
@@ -42,15 +46,11 @@ if(!DB_EXISTED) {
   }
 }
 
-const API_PORT = process.env.RECICLA_API_PORT || 3000;
-
-const RESEND_SECRET = process.env.RECICLA_RESEND_SECRET || false;
-
 if(!RESEND_SECRET) {
   logger.error("Environment variable RECICLA_RESEND_SECRET is not set. OTC auth codes will be put to the logs.");
+} else {
+  const resend = new Resend(RESEND_SECRET);
 }
-
-const resend = new Resend(RESEND_SECRET);
 
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
