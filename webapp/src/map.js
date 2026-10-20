@@ -1,37 +1,11 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { pullMapData } from './backend';
+import { descriptionFromPointTypes } from './misc';
 
 function openPointPopup(point, x, y) {
     let popup = document.getElementById("location-popup");
-    let acceptedkinds = "";
-
-    if(point.accepts_biological == 1) {
-        acceptedkinds += "biológicos"
-    }
-
-    if(point.accepts_metal == 1) {
-        if(acceptedkinds != "") {
-            acceptedkinds += ", ";
-        }
-        acceptedkinds += "metal";
-    }
-
-    if(point.accepts_organic == 1) {
-        if(acceptedkinds != "") {
-            acceptedkinds += ", ";
-        }
-        acceptedkinds += "orgânicos";
-    }
-
-    if(point.accepts_paper == 1) {
-        if(acceptedkinds != "") {
-            acceptedkinds += ", ";
-        }
-        acceptedkinds += "papel";
-    }
-
-    acceptedkinds += ".";
+    let acceptedkinds = descriptionFromPointTypes(point);
 
     popup.innerHTML = `
     <div class="popup-content">
