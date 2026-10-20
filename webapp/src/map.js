@@ -81,7 +81,7 @@ function openPointPopup(point, x, y) {
 
         <div class="button-options">
             <div>
-                <a href="#" class="maps-open-button">Abrir no Maps</a>
+                <a href="https://maps.google.com/?q=${point.lati},${point.long}" class="maps-open-button">Abrir no Maps</a>
             </div>
 
             <div>
