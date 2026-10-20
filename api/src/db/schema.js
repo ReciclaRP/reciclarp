@@ -29,6 +29,18 @@ function __RECICLA_DEFAULT_SCHEMA() {
             creator INTEGER NOT NULL,
             FOREIGN KEY(creator) REFERENCES user(id)
         );
+
+        CREATE TABLE report (
+            rid INTEGER PRIMARY KEY AUTOINCREMENT,
+            reportdescription TEXT NOT NULL,
+
+            category_noexist BOOLEAN NOT NULL DEFAULT 0,
+            category_full BOOLEAN NOT NULL DEFAULT 0,
+            category_badtime BOOLEAN NOT NULL DEFAULT 0,
+
+            pid INTEGER NOT NULL,
+            FOREIGN KEY(pid) REFERENCES point(pid)
+        );
     `;
 }
 

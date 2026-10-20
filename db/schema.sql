@@ -43,5 +43,6 @@ CREATE TABLE report (
   category_full BOOLEAN NOT NULL DEFAULT 0,
   category_badtime BOOLEAN NOT NULL DEFAULT 0,
 
+  pid INTEGER NOT NULL,
   FOREIGN KEY(pid) REFERENCES point(pid)
 );
