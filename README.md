@@ -47,6 +47,7 @@ O banco de dados utilizado pelo projeto é o SQLite, um banco de dados maduro id
 
 - Node.js 20+;
 - npm;
+- Python 3.6.0 (ou superior);
 - navegador moderno.
 
 ### API
