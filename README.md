@@ -50,6 +50,21 @@ O banco de dados utilizado pelo projeto é o SQLite, um banco de dados maduro id
 - Python 3.6.0 (ou superior);
 - navegador moderno.
 
+Para apoio ao SQLite, é necessário que você tneha uma *toolchain* de desenvolvimento instalada no seu sistema operacional.
+
+#### No Windows
+
+- Visual Studio 2017 ou superior
+
+#### Em sistamas Unix não-MacOS
+
+- gcc
+- make
+
+#### No MacOS
+
+- Xcode Command Line Tools (que instalam o clang e o make)
+
 ### API
 
 Primeiro, defina a porta por qual a API irá interagir por meio da variável de ambiente `RECICLA_API_PORT`. (ex `export RP_API_PORT="5000"`).
