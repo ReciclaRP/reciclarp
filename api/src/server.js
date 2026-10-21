@@ -7,6 +7,7 @@ const defaultschema = require("./db/schema.js");
 
 const express = require('express');
 const pino = require('pino');
+const cors = require('cors');
 
 const app = express();
 const logger = pino();
@@ -16,25 +17,40 @@ const DB_EXISTED = fs.existsSync(DB_PATH);
 
 const db = require('better-sqlite3')(DB_PATH);
 
-if(!DB_EXISTED) {
-  db.exec(defaultschema.__RECICLA_DEFAULT_SCHEMA());
-}
+require('dotenv').config();
 
 const API_PORT = process.env.RECICLA_API_PORT || 3000;
-
 const RESEND_SECRET = process.env.RECICLA_RESEND_SECRET || false;
+const WEBAPP_URL = process.env.RECICLA_WEBAPP_URL || 'http://localhost:5173';
 
-if(!RESEND_SECRET) {
-  var errst = "The following environment variables were not provided:";
-  
-  if(!RESEND_SECRET) errst += '\nRESEND_SECRET';
-  
-  logger.error(errst);
+app.use(cors({
+  origin: WEBAPP_URL,
+}));
 
-  process.exit(1);
+if(!DB_EXISTED) {
+  const ADMIN_EMAIL = process.env.RECICLA_ADMIN_EMAIL || "test@example.com";
+  let admseed = defaultschema.__RECICLA_ADMIN_SEED();
+
+  db.exec(defaultschema.__RECICLA_DEFAULT_SCHEMA());
+
+  db.prepare(`
+    INSERT INTO user (id, uname, email, banned, validated, ong)
+    VALUES(?, ?, ?, ?, ?, ?)
+  `).run(0, admseed[0], ADMIN_EMAIL, admseed[1], admseed[2], admseed[3]);
+
+  for(let entry of defaultschema.__RECICLA_POINT_SEED()) {
+    db.prepare(`
+      INSERT INTO point (pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(entry[0], entry[1], entry[2], entry[3], entry[4], entry[5], entry[6], entry[7], entry[8], entry[9], entry[10]);
+  }
 }
 
-const resend = new Resend(RESEND_SECRET);
+if(!RESEND_SECRET) {
+  logger.error("Environment variable RECICLA_RESEND_SECRET is not set. OTC auth codes will be put to the logs.");
+} else {
+  const resend = new Resend(RESEND_SECRET);
+}
 
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -127,7 +143,7 @@ class Account {
     db.prepare(`
       INSERT INTO user (name, email, banned, validated)
       VALUES(?, ?, ?, ?)
-    `).run(this.name, this.email);
+    `).run(this.name, this.email, 0, 0);
 
     this.__get_data();
   }
@@ -169,16 +185,22 @@ class Account {
   }
 
   async __sendverifmail(email, code) {
-    const { data, error } = await resend.emails.send({
-      from: 'ReciclaRP (Não Responda) <reciclarp-naoresponda@comrades.sbs>',
-      to: [email],
-      subject: 'Seu código de login ReciclaRP',
-      html: `Seu código de login é: ${code}.`,
-    });
+    if(RESEND_SECRET) {
+      const { data, error } = await resend.emails.send({
+        from: 'ReciclaRP (Não Responda) <reciclarp-naoresponda@comrades.sbs>',
+        to: [email],
+        subject: 'Seu código de login ReciclaRP',
+        html: `Seu código de login é: ${code}.`,
+      });
 
-    if (error) {
-      return logger.error(`Sending login e-mail to ${email} failed: ${error}`)
+      if (error) {
+        return logger.error(`Sending login e-mail to ${email} failed: ${error}`)
+      }
+    } else {
+      logger.error(`RECICLA_RESEND_SECRET is not available. The login code for ${email} was ${code}.`);
     }
+
+    return true;
   }
 
   send_loginmail() {
@@ -214,6 +236,14 @@ class Account {
   get_id() {
     return this.id;
   }
+}
+
+function get_point_list() {
+    const data = db.prepare(
+      'SELECT * FROM point;'
+    ).all();
+
+    return data;
 }
 
 app.use(express.json());
@@ -299,6 +329,10 @@ app.post("/auth/check", (req, res) => {
       description: "Malformed request"
     });
   }
+});
+
+app.post("/point/list", (req, res) => {
+  res.json(get_point_list());
 });
 
 app.get('/api/ping', (req, res) => {

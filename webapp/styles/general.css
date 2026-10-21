@@ -173,3 +173,32 @@ textarea {
 .checklabel-flex div {
     margin-right: 5px;
 }
+
+.point-name p {
+    margin: 0;
+}
+
+.point-name-hour-flex {
+    display: flex;
+
+    align-items: center;
+    align-content: center;
+    align-self: center;
+}
+
+.point-name-hour-flex div {
+    margin-right: 10px;
+}
+
+.point-title {
+    font-size: 14pt;
+    font-weight: bold;
+}
+
+.ruatal {
+    font-style: italic;
+}
+
+.recpfor {
+    margin-top: 10px;
+}

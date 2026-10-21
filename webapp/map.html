@@ -10,6 +10,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <title>ReciclaRP</title>
+
+    <style>
+      .popup-div {
+        display: none;
+        
+        position: absolute;
+        z-index: 999999999;
+
+        background-color: white;
+        border-width: 1px;
+        border-color: black;
+        border-style: solid;
+        border-radius: 8px;
+
+        padding: 5px 10px 5px 10px;
+      }
+
+      .popup-div h3,p {
+        margin: 0;
+        padding: 0;
+      }
+
+      .popup-nametime {
+        display: flex;
+        align-content: center;
+        align-items: center;
+
+        margin-bottom: 10px;
+      }
+
+      .popup-nametime div {
+        margin-left: 5px;
+        margin-right: 5px;
+      }
+
+      .popup-address,.popup-kinds {
+        margin-left: 5px;
+        margin-right: 5px;
+      }
+
+      .button-options {
+        display: flex;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+
+      .button-options a {
+        text-decoration: none;
+      }
+
+      .button-options div {
+        margin-left: 5px;
+        margin-right: 5px;
+      }
+
+      .maps-open-button {
+        color: white;
+        text-decoration: none;
+
+        background-color: rgb(81, 81, 187);
+        padding: 5px 10px 5px 10px;
+        border-radius: 8px;
+
+        box-shadow: rgba(0, 0, 0, 0.164) 5px 5px 10px;
+
+        transition: 0.3s;
+      }
+
+      .maps-open-button:hover {
+        background-color: white;
+        color: rgb(81, 81, 187);
+        border-color: rgb(81, 81, 187);
+
+        border-width: 1px;
+        border-style: solid;
+        font-weight: bold;
+
+        padding: 5px 15px 5px 15px;
+      }
+    </style>
   </head>
 
   <body>
@@ -29,9 +109,15 @@
     </div>
 
     <div class="main-content">
+      <div class="popup-div" id="location-popup">
+        
+      </div>
+
       <div class="map-div" id="map">
 
       </div>
+
+      
     </div>
   </body>
 

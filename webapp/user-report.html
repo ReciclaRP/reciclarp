@@ -15,37 +15,6 @@ A PARTIR DE SUA ID -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <title>ReciclaRP</title>
-
-    <style>
-      .point-name p {
-        margin: 0;
-      }
-
-      .point-name-hour-flex {
-        display: flex;
-
-        align-items: center;
-        align-content: center;
-        align-self: center;
-      }
-
-      .point-name-hour-flex div {
-        margin-right: 10px;
-      }
-
-      .point-title {
-        font-size: 14pt;
-        font-weight: bold;
-      }
-
-      .ruatal {
-        font-style: italic;
-      }
-
-      .recpfor {
-        margin-top: 10px;
-      }
-    </style>
   </head>
 
   <body>
@@ -69,7 +38,7 @@ A PARTIR DE SUA ID -->
       <div class="point-name">
         <div class="point-name-hour-flex">
           <div>
-            <p class="point-title">Ponto nº XX</p>
+            <p class="point-title">Ponto nº <span id="pnum">XX</span></p>
           </div>
 
           <div>
@@ -111,4 +80,5 @@ A PARTIR DE SUA ID -->
   </body>
 
   <!--seems like type="module" changes things / drops into node! -->
+  <script src="/src/report.js" type="module"></script>
 </html>
