@@ -46,10 +46,12 @@ if(!DB_EXISTED) {
   }
 }
 
+let resend = null;
+
 if(!RESEND_SECRET) {
   logger.error("Environment variable RECICLA_RESEND_SECRET is not set. OTC auth codes will be put to the logs.");
 } else {
-  const resend = new Resend(RESEND_SECRET);
+  resend = new Resend(RESEND_SECRET);
 }
 
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -77,7 +79,40 @@ class Tickets {
   }
 }
 
+class Tokens {
+  constructor() {
+    this.tokens = {};
+  }
+
+  __newtoken() {
+    let toknums = new Uint32Array(4);
+    let tok = "";
+
+    crypto.getRandomValues(toknums);
+    
+    for(let num of toknums) {
+      tok += String(num)
+    }
+
+    return tok;
+  }
+
+  new(email) {
+    this.tokens[email] = this.__newtoken();
+    return this.tokens[email];
+  }
+
+  get(email) {
+    if(email in this.tokens) {
+      return this.tokens[email];
+    } else {
+      return false;
+    }    
+  }
+}
+
 const ticket_queue = new Tickets();
+const token_list = new Tokens();
 
 class Account {
   constructor(email) {
@@ -88,8 +123,6 @@ class Account {
     this.banned = 0;
     this.validated = 0;
   
-    this.tokenstring = "EBAD";
-
     this.real_account = false;
 
     if(this.__exists()) {
@@ -101,19 +134,6 @@ class Account {
         this.ban();
       }
     }
-  }
-
-  __create_token() {
-    let toknums = new Uint32Array(4);
-    let tok = "";
-
-    crypto.getRandomValues(toknums);
-    
-    for(let num of toknums) {
-      tok += String(num)
-    }
-
-    this.tokenstring = tok;
   }
 
   __email_valid() {
@@ -216,13 +236,11 @@ class Account {
   }
 
   token() {
-    this.__create_token();
-
-    return this.tokenstring;
+    return token_list.new(this.email);
   }
 
   token_read() {
-    return this.tokenstring;
+    return token_list.get(this.email);
   }
 
   get_email() {
@@ -250,6 +268,8 @@ app.use(express.json());
 
 // Login e Registro
 app.post("/auth/login", (req, res) => {
+  logger.info(`Route "/auth/login" triggered.`);
+
   if(req.body.email) {
     var account = new Account(req.body.email);
 
@@ -278,6 +298,8 @@ app.post("/auth/login", (req, res) => {
 });
 
 app.post("/auth/token", (req, res) => {
+  logger.info(`Route "/auth/token" triggered.`);
+
   if(req.body.email && req.body.code) {
     if(ticket_queue.get(req.body.email) == req.body.code) {
       let account = new Account(req.body.email);
@@ -303,8 +325,13 @@ app.post("/auth/token", (req, res) => {
 });
 
 app.post("/auth/check", (req, res) => {
+  logger.info(`Route "/auth/check" triggered.`);
+
   if(req.body.email && req.body.token) {
     let account = new Account(req.body.email);
+
+    console.log(account.token_read());
+    console.log(req.body.token);
 
     if(account.token_read() == req.body.token) {
       res.json({
@@ -332,10 +359,14 @@ app.post("/auth/check", (req, res) => {
 });
 
 app.post("/point/list", (req, res) => {
+  logger.info(`Route "/point/list" triggered.`);
+
   res.json(get_point_list());
 });
 
 app.get('/api/ping', (req, res) => {
+  logger.info(`Route "/api/ping" triggered.`);
+
   res.text("pong!");
 });
 
