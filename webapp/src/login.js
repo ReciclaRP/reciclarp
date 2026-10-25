@@ -1,4 +1,4 @@
-import { checkLoginState } from "./backend";
+import { checkLoginState, sendLoginCode, getLoginToken } from "./backend";
 
 async function loggedIn() {
     if(
@@ -30,6 +30,43 @@ async function loggedIn() {
         }
 
         return false;
+    }
+
+    return false;
+}
+
+async function request_login(email) {
+    if(email) {
+        let data = await sendLoginCode(email);
+
+        if(data.type == "okay") {
+            return true;
+        }
+
+        return false;
+    }
+
+    return false;
+}
+
+async function login(email, code, days_valid) {
+    if(email && code) {
+        let data = await getLoginToken(email, code);
+        
+        let curdate = new Date();
+        curdate.setDate(curdate.getDate() + days_valid);
+
+        if(data && data.type == "okay") {
+            let expires_st = "";
+            if(days_valid > 0) {
+                expires_st = `; expires=${curdate[Symbol.toPrimitive("string")]}`;
+            }
+
+            document.cookie = (`logintok=${data.token}` + expires_st);
+            document.cookie = (`loginmail=${email}` + expires_st);
+
+            return true;
+        }
     }
 
     return false;
