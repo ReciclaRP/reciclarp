@@ -1,6 +1,8 @@
+const API_URL = "http://localhost:3000"
+
 async function pullMapData() {
     let res = await fetch(
-        `http://localhost:3000/point/list`,
+        `${API_URL}/point/list`,
         {
             method: 'POST',
             headers: {
@@ -17,6 +19,69 @@ async function pullMapData() {
     return await res.json();
 }
 
+async function sendLoginCode(email) {
+    let res = await fetch(
+        `${API_URL}/auth/login`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email
+            })
+        }
+    )
+
+    return await res.json();
+}
+
+// Get the login token
+async function getLoginToken(email, code) {
+    let res = await fetch(
+        `${API_URL}/auth/token`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+                email: email,
+                code: code
+            })
+        }
+    )
+
+    return await res.json();
+}
+
+async function checkLoginState(email, token) {
+    let res = await fetch(
+        `${API_URL}/auth/check`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token
+            })
+        }
+    )
+
+    return await res.json();
+}
+
 export {
-    pullMapData
+    pullMapData,
+    sendLoginCode,
+    getLoginToken,
+    checkLoginState
 };
