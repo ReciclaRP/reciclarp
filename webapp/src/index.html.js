@@ -3,7 +3,16 @@ na hora do login */
 import { requestLogin } from './logic/login.js';
 
 function displayLoginTechnicalFailure() {
+    console.log("Login failure!");
+}
 
+function loginWithCode() {
+    const logincode_box = document.getElementById("login-code");
+    const logincode = logincode_box.textContent;
+
+    if(logincode) {
+        //todo
+    }
 }
 
 function okPressed() {
@@ -14,9 +23,15 @@ function okPressed() {
             result => {
                 if(result) {
                     const onetimecode_inputs = document.getElementById("id-verif-inputs");
-    
+                    
                     if(onetimecode_inputs) {
                         onetimecode_inputs.style.display = "block";
+                    }
+
+                    const first_login_button = document.getElementById("send-code-button");
+                    
+                    if(first_login_button) {
+                        first_login_button.style.display = "none";
                     }
                 } else {
                     displayLoginTechnicalFailure();
