@@ -35,7 +35,7 @@ async function loggedIn() {
     return false;
 }
 
-async function request_login(email) {
+async function requestLogin(email) {
     if(email) {
         let data = await sendLoginCode(email);
 
@@ -70,4 +70,10 @@ async function login(email, code, days_valid) {
     }
 
     return false;
+}
+
+export {
+    requestLogin,
+    loggedIn,
+    login
 }
