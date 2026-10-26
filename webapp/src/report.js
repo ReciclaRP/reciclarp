@@ -1,5 +1,5 @@
-import { pullMapData } from './backend';
-import { descriptionFromPointTypes } from './misc';
+import { pullMapData } from './logic/backend';
+import { descriptionFromPointTypes } from './logic/misc';
 
 async function setPointVisualDetails() {
     const urlParams = new URLSearchParams(window.location.search);
