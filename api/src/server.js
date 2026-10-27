@@ -161,7 +161,7 @@ class Account {
 
   __create() {
     db.prepare(`
-      INSERT INTO user (name, email, banned, validated)
+      INSERT INTO user (uname, email, banned, validated)
       VALUES(?, ?, ?, ?)
     `).run(this.name, this.email, 0, 0);
 
@@ -197,7 +197,7 @@ class Account {
   __update() {
     db.prepare(`
       UPDATE user
-      SET name = ?, email = ?, banned = ?, validated = ?
+      SET uname = ?, email = ?, banned = ?, validated = ?
       WHERE id = ?
     `).run(
       this.name, this.email, this.banned, this.validated

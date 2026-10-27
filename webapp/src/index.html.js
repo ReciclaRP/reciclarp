@@ -3,7 +3,7 @@ na hora do login */
 // TODO: Variável de ambiente para duração padrão do login
 const LOGIN_VALID_DAYS = 7;
 
-import { requestLogin, login } from './logic/login.js';
+import { requestLogin, login, loggedIn } from './logic/login.js';
 
 function displayLoginTechnicalFailure() {
     console.log("Login failure!");
@@ -74,10 +74,14 @@ function okPressed() {
     }
 }
 
-document.getElementById("send-code-button").addEventListener("click", () => {
-    okPressed();
-});
+if(loggedIn()) {
+    redirectToMap();
+} else {
+    document.getElementById("send-code-button").addEventListener("click", () => {
+        okPressed();
+    });
 
-document.getElementById("login-button").addEventListener("click", () => {
-    loginWithCode();
-});
+    document.getElementById("login-button").addEventListener("click", () => {
+        loginWithCode();
+    });
+}
