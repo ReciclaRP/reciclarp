@@ -59,7 +59,7 @@ async function login(email, code, days_valid) {
         if(data && data.type == "okay") {
             let expires_st = "";
             if(days_valid > 0) {
-                expires_st = `; expires=${curdate[Symbol.toPrimitive("string")]}`;
+                expires_st = `; expires=${curdate.toUTCString()}`;
             }
 
             document.cookie = (`logintok=${data.token}` + expires_st);

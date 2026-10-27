@@ -10,19 +10,19 @@ function displayLoginTechnicalFailure() {
 }
 
 function displayLoginBadCodeFailure() {
-
+    console.log("Login failure! (wrong code)")
 }
 
 function redirectToMap() {
-
+    window.location.href = "/map.html";
 }
 
 function loginWithCode() {
     const email_box = document.getElementById("login-email");
-    const email = email_box.textContent;
+    const email = email_box.value;
 
     const logincode_box = document.getElementById("login-code");
-    const logincode = logincode_box.textContent;
+    const logincode = logincode_box.value;
 
     if(logincode && email) {
         login(email, logincode, LOGIN_VALID_DAYS).then(
@@ -43,7 +43,8 @@ function loginWithCode() {
 
 function okPressed() {
     const email_box = document.getElementById("login-email");
-    const email = email_box.textContent;
+    const email = email_box.value;
+
     if(email) {
         email_box.readOnly = true;
 
@@ -72,3 +73,11 @@ function okPressed() {
         )
     }
 }
+
+document.getElementById("send-code-button").addEventListener("click", () => {
+    okPressed();
+});
+
+document.getElementById("login-button").addEventListener("click", () => {
+    loginWithCode();
+});
