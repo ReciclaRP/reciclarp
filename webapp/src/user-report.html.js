@@ -36,6 +36,18 @@ async function setPointVisualDetails() {
     return false;
 }
 
+function reportPoint() {
+    const report_textbox = document.getElementById("report-textbox")
+    const textbox_data = report_textbox.value;
+
+    const select_problemas = document.getElementById("select-problemas");
+    const select_value = select_problemas.value;
+
+    if(textbox_data && select_value) {
+        
+    }
+}
+
 await setPointVisualDetails();
 
 document.getElementById("report-button").addEventListener("click", () => {
