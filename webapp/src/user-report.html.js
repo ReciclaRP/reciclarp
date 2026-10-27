@@ -37,3 +37,7 @@ async function setPointVisualDetails() {
 }
 
 await setPointVisualDetails();
+
+document.getElementById("report-button").addEventListener("click", () => {
+    //TODO
+});
