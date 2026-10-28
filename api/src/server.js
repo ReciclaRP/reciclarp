@@ -256,12 +256,92 @@ class Account {
   }
 }
 
+class Point {
+  constructor() {
+    this.created = false;
+  }
+
+  from_pid(pid) {
+    const data = db.prepare(
+      'SELECT * FROM point WHERE pid = ?'
+    ).get(pid);
+
+    if(data) {
+      this.pointdescription = data.pointdescription;
+
+      this.lati = data.lati;
+      this.long = data.long;
+
+      this.time_open = data.time_open;
+      this.time_close = data.time_close;
+
+      this.accepts_paper = data.accepts_paper;
+      this.accepts_metal = data.accepts_metal;
+      this.accepts_organic = data.accepts_organic;
+      this.accepts_biological = data.accepts_biological;
+
+      this.approved = data.approved;
+      this.creator = data.creator;
+
+      this.created = true;
+
+      return true;
+    }
+
+    return false;
+  }
+
+  new(pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator) {
+    db.prepare(`
+      INSERT INTO point (pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator);
+  
+    this.pointdescription = pointdescription;
+
+    this.lati = lati;
+    this.long = long;
+
+    this.time_open = time_open;
+    this.time_close = time_close;
+
+    this.accepts_paper = accepts_paper;
+    this.accepts_metal = accepts_metal;
+    this.accepts_organic = accepts_organic;
+    this.accepts_biological = accepts_biological;
+
+    this.approved = approved;
+    this.creator = creator;
+
+    this.created = true;
+  }
+}
+
 function get_point_list() {
     const data = db.prepare(
       'SELECT * FROM point;'
     ).all();
 
     return data;
+}
+
+function create_report(description, problem_kind, point) {
+  let category_noexist = 0;
+  let category_badtime = 0;
+  let category_full = 0;
+
+  if(problem_kind == "pointabsent") {
+    category_noexist = 1;
+  } else if(problem_kind == "pointfull") {
+    category_full = 1;
+  } else if(problem_kind == "pointtime") {
+    category_badtime = 1;
+  }
+  
+  db.prepare(`
+    INSERT INTO report (reportdescription, category_noexist, category_full, category_badtime, pid)
+    VALUES(?, ?, ?, ?, ?)
+  `).run(description, category_badtime, category_noexist, category_badtime, point);
 }
 
 app.use(express.json());
