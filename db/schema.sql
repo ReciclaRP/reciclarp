@@ -44,8 +44,8 @@ CREATE TABLE report (
   category_badtime BOOLEAN NOT NULL DEFAULT 0,
 
   uid INTEGER NOT NULL,
-  FOREIGN KEY(uid) REFERENCES user(id),
-
   pid INTEGER NOT NULL,
+
+  FOREIGN KEY(uid) REFERENCES user(id),
   FOREIGN KEY(pid) REFERENCES point(pid)
 );
