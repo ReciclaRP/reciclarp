@@ -38,6 +38,9 @@ function __RECICLA_DEFAULT_SCHEMA() {
             category_full BOOLEAN NOT NULL DEFAULT 0,
             category_badtime BOOLEAN NOT NULL DEFAULT 0,
 
+            uid INTEGER NOT NULL,
+            FOREIGN KEY(uid) REFERENCES user(id),
+            
             pid INTEGER NOT NULL,
             FOREIGN KEY(pid) REFERENCES point(pid)
         );

@@ -325,7 +325,7 @@ function get_point_list() {
     return data;
 }
 
-function create_report(description, problem_kind, point) {
+function create_report(description, problem_kind, uid, pid) {
   let category_noexist = 0;
   let category_badtime = 0;
   let category_full = 0;
@@ -339,9 +339,9 @@ function create_report(description, problem_kind, point) {
   }
   
   db.prepare(`
-    INSERT INTO report (reportdescription, category_noexist, category_full, category_badtime, pid)
+    INSERT INTO report (reportdescription, category_noexist, category_full, category_badtime, uid, pid)
     VALUES(?, ?, ?, ?, ?)
-  `).run(description, category_badtime, category_noexist, category_badtime, point);
+  `).run(description, category_badtime, category_noexist, category_badtime, uid, pid);
 }
 
 app.use(express.json());
@@ -442,6 +442,40 @@ app.post("/point/list", (req, res) => {
   logger.info(`Route "/point/list" triggered.`);
 
   res.json(get_point_list());
+});
+
+app.post("/report/create", (req, res) => {
+  logger.info(`Route "/report/create" triggered.`);
+
+  if(token_list.get(email) == req.body.token){
+    if(req.body.description && req.body.problem_kind && req.body.pid) {
+      const account = new Account(req.body.email);
+
+      // TODO: CUIDADO COM XSS!
+      create_report(
+        req.body.description,
+        req.body.problem_kind,
+        account.id,
+        req.body.pid
+      );
+
+      res.json({
+          type: "okay"
+      });
+    } else {
+      res.json({
+          type: "error",
+
+          description: "Insufficient information was provided."
+      });
+    }
+  } else {
+    res.json({
+        type: "error",
+
+        description: "Incorrect authentication information was provided."
+    });
+  }
 });
 
 app.get('/api/ping', (req, res) => {
