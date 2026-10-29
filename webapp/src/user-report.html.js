@@ -44,6 +44,7 @@ async function reportPoint() {
     const select_problemas = document.getElementById("select-problemas");
     const select_value = select_problemas.value;
 
+    const urlParams = new URLSearchParams(window.location.search);
     const target_pid = urlParams.get('pid');
 
     const udata = await loggedIn();

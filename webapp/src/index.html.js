@@ -28,6 +28,7 @@ function loginWithCode() {
         login(email, logincode, LOGIN_VALID_DAYS).then(
             result => {
                 if(result) {
+                    console.log(result);
                     redirectToMap();
                 } else {
                     displayLoginBadCodeFailure();
@@ -74,7 +75,7 @@ function okPressed() {
     }
 }
 
-if(loggedIn()) {
+if(await loggedIn()) {
     redirectToMap();
 } else {
     document.getElementById("send-code-button").addEventListener("click", () => {

@@ -1,5 +1,10 @@
 import { checkLoginState, sendLoginCode, getLoginToken } from "./backend";
 
+//stub
+function invalidateLogin() {
+    console.log("invalidate login!")
+}
+
 async function loggedIn() {
     if(
         document.cookie.includes("logintok") 
@@ -11,17 +16,20 @@ async function loggedIn() {
 
         for(let entry of cookies) {
             if(entry.includes("logintok")) {
-                token = entry.split("=")[0];
+                token = entry.split("=")[1];
             }
 
             if(entry.includes("loginmail")) {
-                email = entry.split("=")[0];
+                email = entry.split("=")[1];
             }
         }
 
         if(token && email) {
+            console.log(email)
+            console.log(token);
             let data = await checkLoginState(email, token);
 
+            console.log(data)
             if(data && data.type && data.type == "okay") {
                 return {
                     email: email,
@@ -75,11 +83,6 @@ async function login(email, code, days_valid) {
     }
 
     return false;
-}
-
-//stub
-function invalidateLogin() {
-    // get rid of cookies and go back to index
 }
 
 export {
