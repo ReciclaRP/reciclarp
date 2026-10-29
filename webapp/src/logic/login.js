@@ -1,8 +1,10 @@
 import { checkLoginState, sendLoginCode, getLoginToken } from "./backend";
 
-//stub
 function invalidateLogin() {
-    console.log("invalidate login!")
+    document.cookie = "logintok=; expires = Thu, 01 Jan 1970 00:00:00 UTC;";
+    document.cookie = "loginmail=; expires = Thu, 01 Jan 1970 00:00:00 UTC;";
+
+    window.location.href = "/";
 }
 
 async function loggedIn() {
