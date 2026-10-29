@@ -23,7 +23,12 @@ async function loggedIn() {
             let data = await checkLoginState(email, token);
 
             if(data && data.type && data.type == "okay") {
-                return data;
+                return {
+                    email: email,
+                    token: token,
+
+                    data: data
+                }
             }
 
             return false;
@@ -52,7 +57,7 @@ async function requestLogin(email) {
 async function login(email, code, days_valid) {
     if(email && code) {
         let data = await getLoginToken(email, code);
-        
+
         let curdate = new Date();
         curdate.setDate(curdate.getDate() + days_valid);
 
@@ -72,8 +77,14 @@ async function login(email, code, days_valid) {
     return false;
 }
 
+//stub
+function invalidateLogin() {
+    // get rid of cookies and go back to index
+}
+
 export {
     requestLogin,
     loggedIn,
-    login
+    login,
+    invalidateLogin
 }

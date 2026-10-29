@@ -79,9 +79,34 @@ async function checkLoginState(email, token) {
     return await res.json();
 }
 
+async function createReport(email, token, pid, report) {
+    let res = await fetch(
+        `${API_URL}/report/create`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token,
+
+               description: report.description,
+               problem_kind: report.problem_kind,
+               pid: pid
+            })
+        }
+    )
+
+    return await res.json();
+}
+
 export {
     pullMapData,
     sendLoginCode,
     getLoginToken,
-    checkLoginState
+    checkLoginState,
+    createReport
 };

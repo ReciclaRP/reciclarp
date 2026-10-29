@@ -447,7 +447,7 @@ app.post("/point/list", (req, res) => {
 app.post("/report/create", (req, res) => {
   logger.info(`Route "/report/create" triggered.`);
 
-  if(token_list.get(email) == req.body.token){
+  if(token_list.get(req.body.email) == req.body.token){
     if(req.body.description && req.body.problem_kind && req.body.pid) {
       const account = new Account(req.body.email);
 

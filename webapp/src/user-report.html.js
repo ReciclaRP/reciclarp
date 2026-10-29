@@ -1,4 +1,5 @@
-import { pullMapData } from './logic/backend';
+import { pullMapData, createReport } from './logic/backend';
+import { invalidateLogin, loggedIn } from './logic/login';
 import { descriptionFromPointTypes } from './logic/misc';
 
 async function setPointVisualDetails() {
@@ -36,20 +37,38 @@ async function setPointVisualDetails() {
     return false;
 }
 
-function reportPoint() {
+async function reportPoint() {
     const report_textbox = document.getElementById("report-textbox")
     const textbox_data = report_textbox.value;
 
     const select_problemas = document.getElementById("select-problemas");
     const select_value = select_problemas.value;
 
-    if(textbox_data && select_value) {
-        
+    const target_pid = urlParams.get('pid');
+
+    const udata = await loggedIn();
+
+    if(udata) {
+        if(textbox_data && select_value) {
+            createReport(
+                udata.email, 
+                udata.token, 
+                target_pid, 
+                {
+                    description: textbox_data,
+                    problem_kind: select_value
+                }
+            );
+
+            console.log("report created!") // TODO
+        }
+    } else {
+        invalidateLogin();
     }
 }
 
 await setPointVisualDetails();
 
 document.getElementById("report-button").addEventListener("click", () => {
-    //TODO
+    reportPoint();
 });
