@@ -129,6 +129,8 @@ class Account {
     this.banned = 0;
     this.validated = 0;
   
+    this.ong = 0;
+
     this.real_account = false;
 
     if(this.__exists()) {
@@ -161,6 +163,7 @@ class Account {
       this.email = data.email;
       this.banned = data.banned;
       this.validated = data.validated;
+      this.ong = data.ong;
       this.real_account = true;
     }
   }
@@ -270,6 +273,14 @@ class Account {
 
   token_read() {
     return token_list.get(this.email);
+  }
+
+  is_ong() {
+    if(this.ong) {
+      return true;
+    }
+
+    return false;
   }
 
   get_email() {
@@ -449,7 +460,8 @@ app.post("/auth/check", (req, res) => {
         email: account.get_email(),
         name: account.get_name(),
         id: account.get_id(),
-        banned: account.__is_banned()
+        banned: account.__is_banned(),
+        ong: account.is_ong()
       });
     } else {
       res.json({
