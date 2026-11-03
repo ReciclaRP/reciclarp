@@ -109,6 +109,12 @@ class Tokens {
       return false;
     }    
   }
+
+  invalidate(email) {
+    if(email in this.tokens) {
+      delete this.tokens[email];
+    }
+  }
 }
 
 const ticket_queue = new Tickets();
@@ -223,6 +229,19 @@ class Account {
     return true;
   }
 
+  __delete() {
+    db.prepare(`
+      UPDATE user
+      SET uname = ?, email = ?, banned = ?, validated = ?
+      WHERE id = ?
+    `).run(
+      "Deleted User", 
+      "deleted-email-recicla@comrades.sbs", 
+      0, 
+      1
+    );
+  }
+
   send_loginmail() {
     if(!this.__is_banned()) {
       const code = ticket_queue.new(this.email);
@@ -233,6 +252,16 @@ class Account {
   ban() {
     this.banned = 1;
     this.__update();
+  }
+
+  delete() {
+    if(this.banned != 1) {
+      this.__delete();
+
+      return true;
+    }
+
+    return false;
   }
 
   token() {
@@ -428,6 +457,42 @@ app.post("/auth/check", (req, res) => {
 
         description: "Incorrect authentication information was provided."
       })
+    }
+  } else {
+    res.json({
+      type: "error",
+
+      description: "Malformed request"
+    });
+  }
+});
+
+app.post("/auth/delete", (req, res) => {
+  logger.info(`Route "/auth/delete" triggered.`);
+
+  if(req.body.email && req.body.token) {
+    let account = new Account(req.body.email);
+
+    if(account.token_read() == req.body.token) {
+      const success = account.delete();
+
+      if(success){
+        res.json({
+          type: "okay"
+        });
+      } else {
+        res.json({
+          type: "error",
+
+          description: "Your account cannot be deleted, as it is possibly banned."
+        });
+      }
+    } else {
+      res.json({
+        type: "error",
+
+        description: "Incorrect authentication information was provided."
+      });
     }
   } else {
     res.json({
