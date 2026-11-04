@@ -203,3 +203,16 @@ textarea {
 .recpfor {
     margin-top: 10px;
 }
+
+table, th, td {
+    border-collapse: collapse;
+
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    padding: 2px 7px 2px 7px;
+}
+
+th, td {
+    text-align: left;
+}
