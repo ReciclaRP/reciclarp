@@ -30,56 +30,24 @@
     <div class="main-content">
       <h1>Portal da organização</h1>
 
-      <!-- sub. por um template depois... -->
-      <a href="#" class="cblink">
-        <div class="config-box">
-          <div class="iconplustitle">
-            <div class="icp-icon">
-              <img src="/images/icons/info.png" width="40" height="40">
-            </div>
+      <h2>Pontos</h2>
 
-            <div class="icp-title">
-              <h3>Pontos</h3>
-            </div>
-          </div>
-
-          <p>Veja, edite, crie, e aprove pontos de reciclagem.</p>
-        </div>
-      </a>
-
-      <a href="#" class="cblink">
-        <div class="config-box">
-          <div class="iconplustitle">
-            <div class="icp-icon">
-              <img src="/images/icons/info.png" width="40" height="40">
-            </div>
-
-            <div class="icp-title">
-              <h3>Painel completo</h3>
-            </div>
-          </div>
-
-          <p>Veja e exporte o relatório dos pontos disponíveis.</p>
-        </div>
-      </a>
-
-      <a href="#" class="cblink">
-        <div class="config-box">
-          <div class="iconplustitle">
-            <div class="icp-icon">
-              <img src="/images/icons/gear.png" width="40" height="40">
-            </div>
-
-            <div class="icp-title">
-              <h3>Configurações da conta</h3>
-            </div>
-          </div>
-
-          <p>Gerencie seus dados e defina suas preferências.</p>
-        </div>
-      </a>
+      <table id="points-table">
+        <tr>
+          <th>ID</th>
+          <th>Descrição</th>
+          <th>Hr. aberto</th>
+          <th>Hr. fechado</th>
+          <th>Tipos de lixo</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+          <th>Criador</th>
+          <th>Aprovado</th>
+        </tr>
+      </table>
     </div>
   </body>
 
   <!--seems like type="module" changes things / drops into node! -->
+  <script type="module" src="/src/ong-menu.html.js"></script>
 </html>
