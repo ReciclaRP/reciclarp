@@ -26,19 +26,21 @@
 
           <div class="verif-inputs" id="id-verif-inputs">
             <h3>Código de Verificação</h3>
-            <input type="text" class="login-verif">
+            <input type="number" class="login-verif" id="login-code">
             
             <div class="advice-text">
               <p><small>Um código de verificação foi encaminhado ao seu e-mail.</small></p>
             </div>
+
+            <input type="submit" id="login-button">
           </div>
 
-          <input type="submit" onclick="okPressed()">
+          <input type="submit" id="send-code-button">
         </div>
       </div>
     </div>
   </body>
 
   <!--seems like type="module" changes things / drops into node! -->
-  <script type="text/javascript" src="/src/main.js"></script>
+  <script type="module" src="/src/index.html.js"></script>
 </html>

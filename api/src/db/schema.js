@@ -10,7 +10,7 @@ function __RECICLA_DEFAULT_SCHEMA() {
             ong BOOLEAN NOT NULL DEFAULT 0
         );
 
-        CREATE TABLE point(
+        CREATE TABLE point (
             pid INTEGER PRIMARY KEY AUTOINCREMENT,
             pointdescription TEXT NOT NULL,
 
@@ -38,7 +38,10 @@ function __RECICLA_DEFAULT_SCHEMA() {
             category_full BOOLEAN NOT NULL DEFAULT 0,
             category_badtime BOOLEAN NOT NULL DEFAULT 0,
 
+            uid INTEGER NOT NULL,
             pid INTEGER NOT NULL,
+
+            FOREIGN KEY(uid) REFERENCES user(id),
             FOREIGN KEY(pid) REFERENCES point(pid)
         );
     `;

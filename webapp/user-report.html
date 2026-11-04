@@ -25,7 +25,7 @@ A PARTIR DE SUA ID -->
         </div>
 
         <div class="cr-user">
-          <a href="#">
+          <a href="/user-settings.html">
             <img src="/images/icons/user.png" height="40" width="40">
           </a>
         </div>
@@ -69,16 +69,16 @@ A PARTIR DE SUA ID -->
 
       <h2>Descrição do problema</h2>
 
-      <textarea class="report-description-box">
+      <textarea id="report-textbox" class="report-description-box">
 
       </textarea>
 
       <div class="problemreportbutton">
-        <input type="submit" value="Reportar Problema">
+        <input type="submit" id="report-button" value="Reportar Problema">
       </div>
     </div>
   </body>
 
   <!--seems like type="module" changes things / drops into node! -->
-  <script src="/src/report.js" type="module"></script>
+  <script src="/src/user-report.html.js" type="module"></script>
 </html>

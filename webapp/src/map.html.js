@@ -1,7 +1,7 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { pullMapData } from './backend';
-import { descriptionFromPointTypes } from './misc';
+import { pullMapData } from './logic/backend';
+import { descriptionFromPointTypes } from './logic/misc';
 
 function openPointPopup(point, x, y) {
     let popup = document.getElementById("location-popup");

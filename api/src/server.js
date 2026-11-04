@@ -46,10 +46,12 @@ if(!DB_EXISTED) {
   }
 }
 
+let resend = null;
+
 if(!RESEND_SECRET) {
   logger.error("Environment variable RECICLA_RESEND_SECRET is not set. OTC auth codes will be put to the logs.");
 } else {
-  const resend = new Resend(RESEND_SECRET);
+  resend = new Resend(RESEND_SECRET);
 }
 
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -77,7 +79,46 @@ class Tickets {
   }
 }
 
+class Tokens {
+  constructor() {
+    this.tokens = {};
+  }
+
+  __newtoken() {
+    let toknums = new Uint32Array(4);
+    let tok = "";
+
+    crypto.getRandomValues(toknums);
+    
+    for(let num of toknums) {
+      tok += String(num)
+    }
+
+    return tok;
+  }
+
+  new(email) {
+    this.tokens[email] = this.__newtoken();
+    return this.tokens[email];
+  }
+
+  get(email) {
+    if(email in this.tokens) {
+      return this.tokens[email];
+    } else {
+      return false;
+    }    
+  }
+
+  invalidate(email) {
+    if(email in this.tokens) {
+      delete this.tokens[email];
+    }
+  }
+}
+
 const ticket_queue = new Tickets();
+const token_list = new Tokens();
 
 class Account {
   constructor(email) {
@@ -88,7 +129,7 @@ class Account {
     this.banned = 0;
     this.validated = 0;
   
-    this.tokenstring = "EBAD";
+    this.ong = 0;
 
     this.real_account = false;
 
@@ -101,19 +142,6 @@ class Account {
         this.ban();
       }
     }
-  }
-
-  __create_token() {
-    let toknums = new Uint32Array(4);
-    let tok = "";
-
-    crypto.getRandomValues(toknums);
-    
-    for(let num of toknums) {
-      tok += String(num)
-    }
-
-    this.tokenstring = tok;
   }
 
   __email_valid() {
@@ -135,13 +163,14 @@ class Account {
       this.email = data.email;
       this.banned = data.banned;
       this.validated = data.validated;
+      this.ong = data.ong;
       this.real_account = true;
     }
   }
 
   __create() {
     db.prepare(`
-      INSERT INTO user (name, email, banned, validated)
+      INSERT INTO user (uname, email, banned, validated)
       VALUES(?, ?, ?, ?)
     `).run(this.name, this.email, 0, 0);
 
@@ -177,7 +206,7 @@ class Account {
   __update() {
     db.prepare(`
       UPDATE user
-      SET name = ?, email = ?, banned = ?, validated = ?
+      SET uname = ?, email = ?, banned = ?, validated = ?
       WHERE id = ?
     `).run(
       this.name, this.email, this.banned, this.validated
@@ -203,6 +232,19 @@ class Account {
     return true;
   }
 
+  __delete() {
+    db.prepare(`
+      UPDATE user
+      SET uname = ?, email = ?, banned = ?, validated = ?
+      WHERE id = ?
+    `).run(
+      "Deleted User", 
+      "deleted-email-recicla@comrades.sbs", 
+      0, 
+      1
+    );
+  }
+
   send_loginmail() {
     if(!this.__is_banned()) {
       const code = ticket_queue.new(this.email);
@@ -215,14 +257,30 @@ class Account {
     this.__update();
   }
 
-  token() {
-    this.__create_token();
+  delete() {
+    if(this.banned != 1) {
+      this.__delete();
 
-    return this.tokenstring;
+      return true;
+    }
+
+    return false;
+  }
+
+  token() {
+    return token_list.new(this.email);
   }
 
   token_read() {
-    return this.tokenstring;
+    return token_list.get(this.email);
+  }
+
+  is_ong() {
+    if(this.ong) {
+      return true;
+    }
+
+    return false;
   }
 
   get_email() {
@@ -238,6 +296,67 @@ class Account {
   }
 }
 
+class Point {
+  constructor() {
+    this.created = false;
+  }
+
+  from_pid(pid) {
+    const data = db.prepare(
+      'SELECT * FROM point WHERE pid = ?'
+    ).get(pid);
+
+    if(data) {
+      this.pointdescription = data.pointdescription;
+
+      this.lati = data.lati;
+      this.long = data.long;
+
+      this.time_open = data.time_open;
+      this.time_close = data.time_close;
+
+      this.accepts_paper = data.accepts_paper;
+      this.accepts_metal = data.accepts_metal;
+      this.accepts_organic = data.accepts_organic;
+      this.accepts_biological = data.accepts_biological;
+
+      this.approved = data.approved;
+      this.creator = data.creator;
+
+      this.created = true;
+
+      return true;
+    }
+
+    return false;
+  }
+
+  new(pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator) {
+    db.prepare(`
+      INSERT INTO point (pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator);
+  
+    this.pointdescription = pointdescription;
+
+    this.lati = lati;
+    this.long = long;
+
+    this.time_open = time_open;
+    this.time_close = time_close;
+
+    this.accepts_paper = accepts_paper;
+    this.accepts_metal = accepts_metal;
+    this.accepts_organic = accepts_organic;
+    this.accepts_biological = accepts_biological;
+
+    this.approved = approved;
+    this.creator = creator;
+
+    this.created = true;
+  }
+}
+
 function get_point_list() {
     const data = db.prepare(
       'SELECT * FROM point;'
@@ -246,10 +365,31 @@ function get_point_list() {
     return data;
 }
 
+function create_report(description, problem_kind, uid, pid) {
+  let category_noexist = 0;
+  let category_badtime = 0;
+  let category_full = 0;
+
+  if(problem_kind == "pointabsent") {
+    category_noexist = 1;
+  } else if(problem_kind == "pointfull") {
+    category_full = 1;
+  } else if(problem_kind == "pointtime") {
+    category_badtime = 1;
+  }
+  
+  db.prepare(`
+    INSERT INTO report (reportdescription, category_noexist, category_full, category_badtime, uid, pid)
+    VALUES(?, ?, ?, ?, ?)
+  `).run(description, category_badtime, category_noexist, category_badtime, uid, pid);
+}
+
 app.use(express.json());
 
 // Login e Registro
 app.post("/auth/login", (req, res) => {
+  logger.info(`Route "/auth/login" triggered.`);
+
   if(req.body.email) {
     var account = new Account(req.body.email);
 
@@ -278,6 +418,8 @@ app.post("/auth/login", (req, res) => {
 });
 
 app.post("/auth/token", (req, res) => {
+  logger.info(`Route "/auth/token" triggered.`);
+
   if(req.body.email && req.body.code) {
     if(ticket_queue.get(req.body.email) == req.body.code) {
       let account = new Account(req.body.email);
@@ -303,8 +445,13 @@ app.post("/auth/token", (req, res) => {
 });
 
 app.post("/auth/check", (req, res) => {
+  logger.info(`Route "/auth/check" triggered.`);
+
   if(req.body.email && req.body.token) {
     let account = new Account(req.body.email);
+
+    console.log(account.token_read());
+    console.log(req.body.token);
 
     if(account.token_read() == req.body.token) {
       res.json({
@@ -313,7 +460,8 @@ app.post("/auth/check", (req, res) => {
         email: account.get_email(),
         name: account.get_name(),
         id: account.get_id(),
-        banned: account.__is_banned()
+        banned: account.__is_banned(),
+        ong: account.is_ong()
       });
     } else {
       res.json({
@@ -331,11 +479,85 @@ app.post("/auth/check", (req, res) => {
   }
 });
 
+app.post("/auth/delete", (req, res) => {
+  logger.info(`Route "/auth/delete" triggered.`);
+
+  if(req.body.email && req.body.token) {
+    let account = new Account(req.body.email);
+
+    if(account.token_read() == req.body.token) {
+      const success = account.delete();
+
+      if(success){
+        res.json({
+          type: "okay"
+        });
+      } else {
+        res.json({
+          type: "error",
+
+          description: "Your account cannot be deleted, as it is possibly banned."
+        });
+      }
+    } else {
+      res.json({
+        type: "error",
+
+        description: "Incorrect authentication information was provided."
+      });
+    }
+  } else {
+    res.json({
+      type: "error",
+
+      description: "Malformed request"
+    });
+  }
+});
+
 app.post("/point/list", (req, res) => {
+  logger.info(`Route "/point/list" triggered.`);
+
   res.json(get_point_list());
 });
 
+app.post("/report/create", (req, res) => {
+  logger.info(`Route "/report/create" triggered.`);
+
+  if(token_list.get(req.body.email) == req.body.token){
+    if(req.body.description && req.body.problem_kind && req.body.pid) {
+      const account = new Account(req.body.email);
+
+      // TODO: CUIDADO COM XSS!
+      create_report(
+        req.body.description,
+        req.body.problem_kind,
+        account.id,
+        req.body.pid
+      );
+
+      res.json({
+          type: "okay"
+      });
+    } else {
+      res.json({
+          type: "error",
+
+          description: "Insufficient information was provided."
+      });
+    }
+  } else {
+    res.json({
+        type: "error",
+
+        description: "Incorrect authentication information was provided."
+    });
+  }
+});
+
 app.get('/api/ping', (req, res) => {
+  logger.info(`Route "/api/ping" triggered.`);
+
   res.text("pong!");
 });
 
