@@ -579,9 +579,7 @@ app.post("/report/create", (req, res) => {
 });
 
 app.get('/api/ping', (req, res) => {
-  logger.info(`Route "/api/ping" triggered.`);
-
-  res.text("pong!");
+  res.send(req.ip);
 });
 
 app.listen(API_PORT, () => {
