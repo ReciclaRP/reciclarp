@@ -17,6 +17,8 @@ const DB_EXISTED = fs.existsSync(DB_PATH);
 
 const db = require('better-sqlite3')(DB_PATH);
 
+const ratelimits = require('express-rate-limit');
+
 require('dotenv').config();
 
 const API_PORT = process.env.RECICLA_API_PORT || 3000;
@@ -26,6 +28,27 @@ const WEBAPP_URL = process.env.RECICLA_WEBAPP_URL || 'http://localhost:5173';
 app.use(cors({
   origin: WEBAPP_URL,
 }));
+
+const general_limiter = ratelimits.rateLimit({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+	standardHeaders: 'draft-8', // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+	ipv6Subnet: 56
+});
+
+const expensive_stuff_limiter = ratelimits.rateLimit({
+	windowMs: 2 * 60 * 1000, // 2 minutes
+	limit: 1, // Limit each IP to 1 request per `window` (here, per 2 minutes).
+	standardHeaders: 'draft-8', // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+	ipv6Subnet: 48
+});
+
+app.use(general_limiter);
+app.use('/auth/login', expensive_stuff_limiter);
+
+app.disable('x-powered-by');
 
 if(!DB_EXISTED) {
   const ADMIN_EMAIL = process.env.RECICLA_ADMIN_EMAIL || "test@example.com";
