@@ -51,8 +51,6 @@ function openPointPopup(point, x, y) {
     </div>`;
 
     popup.style.display = "block";
-    popup.style.left = x+'px';
-    popup.style.top = y+'px';
 }
 
 async function markerClicked(e) {
