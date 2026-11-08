@@ -54,6 +54,8 @@
 }
 
 .popup-content {
+
+
     background-color: white;
     border-width: 1px;
     border-color: black;
@@ -88,6 +90,7 @@
 
 .button-options {
     display: flex;
+    flex-wrap: wrap;
     margin-top: 10px;
     margin-bottom: 10px;
 }
@@ -97,6 +100,7 @@
 }
 
 .button-options div {
+    margin-top: 10px;
     margin-left: 5px;
     margin-right: 5px;
 }
