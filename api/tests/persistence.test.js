@@ -17,37 +17,24 @@ test('accounts and points survive an API restart without reseeding', async () =>
   try {
     firstServer = await startApiServer({ directory });
     const email = 'persistent@example.com';
-    await login(firstServer, email);
+    const { token } = await login(firstServer, email);
 
-    // /point/create is currently broken (see points.test.js), so insert the
-    // row directly to exercise the database lifecycle rather than the route.
-    const firstDb = openDatabase(firstServer, {});
-    try {
-      const user = firstDb.prepare('SELECT id FROM user WHERE email = ?').get(email);
-      firstDb
-        .prepare(`
-          INSERT INTO point (
-            pointdescription, lati, long, time_open, time_close,
-            accepts_paper, accepts_metal, accepts_organic, accepts_biological,
-            approved, creator
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `)
-        .run(
-          'Ponto persistente',
-          -21.11,
-          -47.71,
-          '9:00',
-          '18:00',
-          1,
-          0,
-          0,
-          0,
-          0,
-          user.id,
-        );
-    } finally {
-      firstDb.close();
-    }
+    const created = await firstServer.post('/point/create', {
+      email,
+      token,
+      data: {
+        pointdescription: 'Ponto persistente',
+        lati: -21.11,
+        long: -47.71,
+        time_open: '9:00',
+        time_close: '18:00',
+      },
+      accepts_paper: 1,
+      accepts_metal: 0,
+      accepts_organic: 0,
+      accepts_biological: 0,
+    });
+    assert.deepEqual(created.json, { type: 'okay' });
 
     await firstServer.close();
     firstServer = undefined;

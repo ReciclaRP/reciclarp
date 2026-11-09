@@ -16,6 +16,18 @@ async function withServer(callback) {
   }
 }
 
+function findPointByDescription(server, description) {
+  const db = openDatabase(server);
+
+  try {
+    return db
+      .prepare('SELECT * FROM point WHERE pointdescription = ? ORDER BY pid DESC')
+      .get(description);
+  } finally {
+    db.close();
+  }
+}
+
 function pointPayload(overrides = {}) {
   const { data = {}, ...flags } = overrides;
 
@@ -147,12 +159,181 @@ test('an ONG cannot update a point that does not exist', async () => {
   });
 });
 
-// Known defect: bton() returns JavaScript booleans, but better-sqlite3 only
-// accepts numbers, strings, bigints, buffers, and null. Point creation and
-// updates therefore fail with "TypeError: SQLite3 can only bind ..." (HTTP 500)
-// as soon as they reach the database.
-test.todo('an authenticated user can create a point, which awaits approval');
-test.todo('a point created by an ONG is approved immediately');
-test.todo('material flags are normalised to database booleans on creation');
-test.todo('an ONG can update an existing point and thereby approve it');
-test.todo('material flags are normalised to database booleans on update');
+test('an authenticated user can create a point, which awaits approval', async () => {
+  await withServer(async (server) => {
+    const email = 'creator@example.com';
+    const { token } = await login(server, email);
+
+    const response = await server.post('/point/create', {
+      ...pointPayload({
+        data: {
+          pointdescription: 'Ponto do criador',
+          lati: -21.2,
+          long: -47.82,
+          time_open: '7:30',
+          time_close: '19:30',
+        },
+      }),
+      email,
+      token,
+    });
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(response.json, { type: 'okay' });
+
+    const point = findPointByDescription(server, 'Ponto do criador');
+    assert.ok(point);
+    assert.equal(point.lati, -21.2);
+    assert.equal(point.long, -47.82);
+    assert.equal(point.time_open, '7:30');
+    assert.equal(point.time_close, '19:30');
+    assert.equal(point.accepts_paper, 1);
+    assert.equal(point.accepts_metal, 0);
+    assert.equal(point.accepts_organic, 1);
+    assert.equal(point.accepts_biological, 0);
+    assert.equal(point.approved, 0, 'points created by regular users require approval');
+    assert.equal(point.creator, 1);
+
+    const list = await server.post('/point/list', {});
+    assert.ok(list.json.some((entry) => entry.pid === point.pid));
+  });
+});
+
+test('a point created by an ONG is approved immediately', async () => {
+  await withServer(async (server) => {
+    const { token } = await login(server, 'admin@example.com');
+
+    const response = await server.post('/point/create', {
+      ...pointPayload({ data: { pointdescription: 'Ponto da ONG' } }),
+      email: 'admin@example.com',
+      token,
+    });
+
+    assert.deepEqual(response.json, { type: 'okay' });
+
+    const point = findPointByDescription(server, 'Ponto da ONG');
+    assert.ok(point);
+    assert.equal(point.approved, 1);
+    assert.equal(point.creator, 0);
+  });
+});
+
+test('material flags are normalised to database booleans on creation', async () => {
+  await withServer(async (server) => {
+    const email = 'flags@example.com';
+    const { token } = await login(server, email);
+
+    const response = await server.post('/point/create', {
+      ...pointPayload({ data: { pointdescription: 'Ponto com flags' } }),
+      email,
+      token,
+      accepts_paper: true,
+      accepts_metal: '0',
+      accepts_organic: '',
+      accepts_biological: 1,
+    });
+
+    assert.deepEqual(response.json, { type: 'okay' });
+
+    const point = findPointByDescription(server, 'Ponto com flags');
+    assert.ok(point);
+    assert.equal(point.accepts_paper, 1);
+    assert.equal(point.accepts_metal, 0);
+    assert.equal(point.accepts_organic, 0);
+    assert.equal(point.accepts_biological, 1);
+  });
+});
+
+test('an ONG can update an existing point and thereby approve it', async () => {
+  await withServer(async (server) => {
+    const creatorEmail = 'pending-creator@example.com';
+    const creator = await login(server, creatorEmail);
+
+    await server.post('/point/create', {
+      ...pointPayload({ data: { pointdescription: 'Ponto pendente' } }),
+      email: creatorEmail,
+      token: creator.token,
+    });
+
+    const pending = findPointByDescription(server, 'Ponto pendente');
+    assert.ok(pending);
+    assert.equal(pending.approved, 0);
+
+    const admin = await login(server, 'admin@example.com');
+    const response = await server.post('/point/update', {
+      email: 'admin@example.com',
+      token: admin.token,
+      data: {
+        pid: pending.pid,
+        pointdescription: 'Ponto aprovado',
+        lati: -21.25,
+        long: -47.75,
+        time_open: '6:00',
+        time_close: '20:00',
+      },
+      accepts_paper: 0,
+      accepts_metal: 1,
+      accepts_organic: 0,
+      accepts_biological: 1,
+    });
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(response.json, { type: 'okay' });
+
+    const db = openDatabase(server);
+    try {
+      const point = db.prepare('SELECT * FROM point WHERE pid = ?').get(pending.pid);
+      assert.equal(point.pointdescription, 'Ponto aprovado');
+      assert.equal(point.lati, -21.25);
+      assert.equal(point.long, -47.75);
+      assert.equal(point.time_open, '6:00');
+      assert.equal(point.time_close, '20:00');
+      assert.equal(point.accepts_paper, 0);
+      assert.equal(point.accepts_metal, 1);
+      assert.equal(point.accepts_organic, 0);
+      assert.equal(point.accepts_biological, 1);
+      assert.equal(point.approved, 1);
+      assert.equal(point.creator, pending.creator, 'the original creator must be preserved');
+    } finally {
+      db.close();
+    }
+  });
+});
+
+test('material flags are normalised to database booleans on update', async () => {
+  await withServer(async (server) => {
+    const admin = await login(server, 'admin@example.com');
+
+    const response = await server.post('/point/update', {
+      email: 'admin@example.com',
+      token: admin.token,
+      data: {
+        pid: 1,
+        pointdescription: 'Ponto com flags atualizadas',
+        lati: -21.12,
+        long: -47.83,
+        time_open: '8:00',
+        time_close: '17:00',
+      },
+      accepts_paper: true,
+      accepts_metal: '0',
+      accepts_organic: '',
+      accepts_biological: 1,
+    });
+
+    assert.deepEqual(response.json, { type: 'okay' });
+
+    const db = openDatabase(server);
+    try {
+      const point = db.prepare('SELECT * FROM point WHERE pid = 1').get();
+      assert.equal(point.pointdescription, 'Ponto com flags atualizadas');
+      assert.equal(point.accepts_paper, 1);
+      assert.equal(point.accepts_metal, 0);
+      assert.equal(point.accepts_organic, 0);
+      assert.equal(point.accepts_biological, 1);
+      assert.equal(point.approved, 1);
+    } finally {
+      db.close();
+    }
+  });
+});

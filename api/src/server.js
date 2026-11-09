@@ -168,8 +168,6 @@ class Account {
     } else {
       if(this.__email_valid()) {
         this.__create();
-      } else {
-        this.ban();
       }
     }
   }
@@ -239,7 +237,7 @@ class Account {
       SET uname = ?, email = ?, banned = ?, validated = ?
       WHERE id = ?
     `).run(
-      this.name, this.email, this.banned, this.validated
+      this.name, this.email, this.banned, this.validated, this.id
     );
   }
 

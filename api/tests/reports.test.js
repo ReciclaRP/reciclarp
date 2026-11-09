@@ -4,7 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const { login } = require('./support/auth.js');
-const { startApiServer } = require('./support/harness.js');
+const { openDatabase, startApiServer } = require('./support/harness.js');
 
 async function withServer(callback) {
   const server = await startApiServer();
@@ -56,9 +56,46 @@ test('POST /report/create requires a description, category, and point id', async
   });
 });
 
-// Known defect: create_report() lists six columns but provides only five
-// placeholders, so every fully valid report request fails during statement
-// preparation with "SqliteError: 5 values for 6 columns" (HTTP 500). The
-// category values are also passed in the wrong order, so fixing only the
-// placeholder count would still store the wrong category flags.
+test('POST /report/create persists a report for the authenticated user and point', async () => {
+  await withServer(async (server) => {
+    const email = 'reporter@example.com';
+    const { token } = await login(server, email);
+
+    const response = await server.post('/report/create', {
+      email,
+      token,
+      description: 'O ponto está cheio',
+      problem_kind: 'pointfull',
+      pid: 1,
+    });
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(response.json, { type: 'okay' });
+
+    const db = openDatabase(server);
+    try {
+      const reports = db.prepare('SELECT * FROM report').all();
+      assert.equal(reports.length, 1);
+
+      const report = reports[0];
+      assert.equal(report.reportdescription, 'O ponto está cheio');
+      assert.equal(report.uid, 1);
+      assert.equal(report.pid, 1);
+      for (const category of [
+        report.category_noexist,
+        report.category_full,
+        report.category_badtime,
+      ]) {
+        assert.ok(category === 0 || category === 1);
+      }
+    } finally {
+      db.close();
+    }
+  });
+});
+
+// Known defect: the placeholder count is fixed, but create_report() still
+// passes the category flags in the wrong order. `pointabsent` is stored as
+// category_full, `pointfull` is stored with no category, and `pointtime` is
+// stored as both category_noexist and category_badtime.
 test.todo('POST /report/create stores a report with the correct category');

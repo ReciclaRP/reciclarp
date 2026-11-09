@@ -70,7 +70,30 @@ test('POST /auth/delete refuses to delete a banned account', async () => {
   });
 });
 
-// Known defect: Account.__delete() issues an UPDATE with five placeholders but
-// supplies only four parameters, so deleting an active account raises a
-// RangeError and the route responds with HTTP 500.
-test.todo('POST /auth/delete removes an active account');
+test('POST /auth/delete anonymises an active account', async () => {
+  await withServer(async (server) => {
+    const email = 'delete-active@example.com';
+    const { token } = await login(server, email);
+
+    const response = await server.post('/auth/delete', { email, token });
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(response.json, { type: 'okay' });
+
+    const db = openDatabase(server);
+    try {
+      const original = db.prepare('SELECT * FROM user WHERE email = ?').get(email);
+      assert.equal(original, undefined, 'the original e-mail must no longer exist');
+
+      const deleted = db
+        .prepare('SELECT * FROM user WHERE email = ?')
+        .get('deleted-email-recicla@comrades.sbs');
+      assert.ok(deleted, 'the account should be anonymised');
+      assert.equal(deleted.uname, 'Deleted User');
+      assert.equal(deleted.banned, 0);
+      assert.equal(deleted.validated, 1);
+    } finally {
+      db.close();
+    }
+  });
+});

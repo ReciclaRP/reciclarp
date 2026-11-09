@@ -114,6 +114,7 @@ test('POST /auth/check returns the authenticated account details', async () => {
     assert.deepEqual(response.json, {
       type: 'okay',
       email,
+      name: '402500915_DEFAULT_NAME',
       id: 1,
       banned: false,
       ong: false,
@@ -162,6 +163,7 @@ test('an ONG account is identified by the authentication endpoints', async () =>
     assert.deepEqual(response.json, {
       type: 'okay',
       email: 'admin@example.com',
+      name: 'Admin',
       id: 0,
       banned: false,
       ong: true,
@@ -227,16 +229,54 @@ test('the e-mail validator accepts common valid addresses', async () => {
   });
 });
 
-// Known defect: Account.__get_data() reads `data.name`, but the column is
-// called `uname`. Authenticated responses therefore omit the display name.
-test.todo('POST /auth/check includes the account display name');
+test('POST /auth/check does not write authentication tokens to logs', async () => {
+  await withServer(async (server) => {
+    const email = 'quiet-user@example.com';
+    const { token } = await login(server, email);
+    const logStart = server.logLines.length;
 
-// Security concern: /auth/check writes both the stored token and the token
-// supplied by the client to stdout, exposing session credentials in logs.
-test.todo('POST /auth/check does not write authentication tokens to logs');
+    const response = await server.post('/auth/check', { email, token });
+    assert.equal(response.json.type, 'okay');
 
-// Known defect: Account.ban() calls Account.__update(), whose UPDATE statement
-// needs the account id but receives only four values. The request therefore
-// fails with a RangeError (HTTP 500) instead of the documented "unactionable"
-// response.
+    const checkLogs = server.logLines.slice(logStart);
+    assert.ok(checkLogs.length > 0, 'the route should still emit its normal log line');
+    for (const line of checkLogs) {
+      assert.ok(!line.includes(token), `the token leaked into a log line: ${line}`);
+    }
+  });
+});
+
+// Currently unfixed: Account no longer bans an invalid address and /auth/login
+// has no other validation, so the route accepts it with "Action has been
+// taken." and queues (and logs) a one-time code for an undeliverable address.
 test.todo('POST /auth/login rejects an invalid e-mail without an internal error');
+
+test('POST /auth/login leaves existing accounts untouched for an invalid e-mail', async () => {
+  await withServer(async (server) => {
+    const response = await server.post(
+      '/auth/login',
+      { email: 'not-an-email' },
+      { localAddress: '127.0.0.203' },
+    );
+
+    assert.equal(response.status, 200);
+
+    const db = openDatabase(server);
+    try {
+      const admin = db.prepare('SELECT * FROM user WHERE id = 0').get();
+      assert.ok(admin);
+      assert.equal(admin.email, 'admin@example.com');
+      assert.equal(admin.uname, 'Admin');
+      assert.equal(admin.banned, 0);
+      assert.equal(admin.validated, 1);
+      assert.equal(admin.ong, 1);
+
+      const rejected = db
+        .prepare('SELECT * FROM user WHERE email = ?')
+        .get('not-an-email');
+      assert.equal(rejected, undefined, 'an invalid address must not become an account');
+    } finally {
+      db.close();
+    }
+  });
+});
