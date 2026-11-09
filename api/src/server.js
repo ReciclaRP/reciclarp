@@ -573,6 +573,44 @@ app.post("/point/list", (req, res) => {
   res.json(get_point_list());
 });
 
+app.post("/point/create", (req, res) => {
+  logger.info(`Route "/point/creat" triggered.`);
+
+  if(token_list.get(req.body.email) == req.body.token) {
+    let autoapproved = false;
+    let user_account = new Account(req.body.email);
+    let point = new Point();
+
+    if(user_account.is_ong()) {
+      autoapproved = true;
+    }
+
+    point.new(
+      String(req.body.data.pointdescription), 
+      req.body.data.lati,
+      req.body.data.long, 
+      req.body.data.time_open,
+      req.body.data.time_close,
+      bton(req.body.accepts_paper),
+      bton(req.body.accepts_metal),
+      bton(req.body.accepts_organic),
+      bton(req.body.accepts_biological),
+      bton(autoapproved),
+      user_account.get_id()
+    )
+
+    res.json({
+      type: "okay"
+    });
+  } else {
+    res.json({
+      type: "error",
+
+      description: "Incorrect authentication information was provided."
+    });
+  }
+});
+
 // TODO: User edit history
 app.post("/point/update", (req, res) => {
   logger.info(`Route "/point/update" triggered.`);
