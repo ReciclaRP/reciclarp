@@ -45,10 +45,18 @@ const expensive_stuff_limiter = ratelimits.rateLimit({
 	ipv6Subnet: 48
 });
 
+const points_limiter = ratelimits.rateLimit({
+	windowMs: 2 * 60 * 1000, // 2 minutes
+	limit: 1, // Limit each IP to 1 request per `window` (here, per 2 minutes).
+	standardHeaders: 'draft-8', // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+	ipv6Subnet: 48
+});
+
 app.use(general_limiter);
 app.use('/auth/login', expensive_stuff_limiter);
-app.use('/point/create', expensive_stuff_limiter);
-app.use('/point/update', expensive_stuff_limiter);
+app.use('/point/create', points_limiter);
+app.use('/point/update', points_limiter);
 
 app.disable('x-powered-by');
 
@@ -323,6 +331,10 @@ class Account {
   get_id() {
     return this.id;
   }
+
+  exists() {
+    return this.real_account;
+  }
 }
 
 class Point {
@@ -434,7 +446,7 @@ function create_report(description, problem_kind, uid, pid) {
   db.prepare(`
     INSERT INTO report (reportdescription, category_noexist, category_full, category_badtime, uid, pid)
     VALUES(?, ?, ?, ?, ?, ?)
-  `).run(description, category_badtime, category_noexist, category_badtime, uid, pid);
+  `).run(description, category_noexist, category_full, category_badtime, uid, pid);
 }
 
 app.use(express.json());
@@ -453,13 +465,21 @@ app.post("/auth/login", (req, res) => {
         description: "The e-mail provided was unactionable."
       });
     } else {
-      account.send_loginmail();
+      if(account.exists()) {
+        account.send_loginmail();
 
-      res.json({
-        type: "okay",
+        res.json({
+          type: "okay",
 
-        description: "Action has been taken."
-      })
+          description: "Action has been taken."
+        })
+      } else {
+        res.json({
+          type: "error",
+
+          description: "The account does not exist and could not be created. Did you use a real e-mail address?"
+        });
+      }
     } 
   } else {
     res.json({
