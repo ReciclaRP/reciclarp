@@ -77,6 +77,11 @@ if(!RESEND_SECRET) {
   resend = new Resend(RESEND_SECRET);
 }
 
+function bton(b) {
+  if(b == 0) return false;
+  return true;
+}
+
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 class Tickets {
@@ -324,7 +329,7 @@ class Point {
     this.created = false;
   }
 
-  from_pid(pid) {
+  read_from_pid(pid) {
     const data = db.prepare(
       'SELECT * FROM point WHERE pid = ?'
     ).get(pid);
@@ -348,18 +353,28 @@ class Point {
 
       this.created = true;
 
+      this.pid = pid;
+
       return true;
     }
 
     return false;
   }
 
-  new(pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator) {
-    db.prepare(`
-      INSERT INTO point (pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator)
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator);
-  
+  __new_or_update(isnew=false, pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator) {
+    if(isnew) {
+      db.prepare(`
+        INSERT INTO point (pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator);
+    } else {
+      db.prepare(`
+        UPDATE point
+        SET pointdescription = ?, lati = ?, long = ?, time_open = ?, time_close = ?, accepts_paper = ?, accepts_metal = ?, accepts_organic = ?, accepts_biological = ?, approved = ?, creator = ?
+        WHERE pid = ?
+      `).run(pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator, this.pid);
+    }
+
     this.pointdescription = pointdescription;
 
     this.lati = lati;
@@ -377,6 +392,20 @@ class Point {
     this.creator = creator;
 
     this.created = true;
+  }
+
+  new(pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator) {
+    this.__new_or_update(true, pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, approved, creator);
+  }
+
+  update(pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological) {
+    if(this.created) {
+      this.__new_or_update(false, pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological, 1, this.creator);
+      
+      return true;
+    }
+
+    return false;
   }
 }
 
@@ -544,10 +573,58 @@ app.post("/point/list", (req, res) => {
   res.json(get_point_list());
 });
 
+// TODO: User edit history
+app.post("/point/update", (req, res) => {
+  logger.info(`Route "/point/update" triggered.`);
+
+  if(token_list.get(req.body.email) == req.body.token) {
+    let user_account = new Account(req.body.email);
+    if(user_account.is_ong()) {
+      let point = new Point();
+
+      if(point.read_from_pid(req.body.data.pid)) {
+        point.update(
+          String(req.body.data.pointdescription), 
+          req.body.data.lati,
+          req.body.data.long, 
+          req.body.data.time_open,
+          req.body.data.time_close,
+          bton(req.body.accepts_paper),
+          bton(req.body.accepts_metal),
+          bton(req.body.accepts_organic),
+          bton(req.body.accepts_biological)
+        );
+
+        res.json({
+          type: "okay"
+        });
+      } else {
+        res.json({
+          type: "error",
+    
+          description: "The data you seek to edit does not exist."
+        });
+      }
+    } else {
+      res.json({
+        type: "error",
+  
+        description: "Incorrect authentication information was provided."
+      });
+    }
+  } else {
+    res.json({
+      type: "error",
+
+      description: "Incorrect authentication information was provided."
+    });
+  }
+});
+
 app.post("/report/create", (req, res) => {
   logger.info(`Route "/report/create" triggered.`);
 
-  if(token_list.get(req.body.email) == req.body.token){
+  if(token_list.get(req.body.email) == req.body.token) {
     if(req.body.description && req.body.problem_kind && req.body.pid) {
       const account = new Account(req.body.email);
 
