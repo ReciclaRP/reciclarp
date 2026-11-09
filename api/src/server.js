@@ -80,8 +80,8 @@ if(!RESEND_SECRET) {
 }
 
 function bton(b) {
-  if(b == 0) return false;
-  return true;
+  if(b == true) return 1;
+  return 0;
 }
 
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -189,7 +189,7 @@ class Account {
 
     if(data) {
       this.id = data.id;
-      this.name = data.name;
+      this.name = data.uname;
       this.email = data.email;
       this.banned = data.banned;
       this.validated = data.validated;
@@ -271,7 +271,8 @@ class Account {
       "Deleted User", 
       "deleted-email-recicla@comrades.sbs", 
       0, 
-      1
+      1,
+      this.id
     );
   }
 
@@ -434,7 +435,7 @@ function create_report(description, problem_kind, uid, pid) {
   
   db.prepare(`
     INSERT INTO report (reportdescription, category_noexist, category_full, category_badtime, uid, pid)
-    VALUES(?, ?, ?, ?, ?)
+    VALUES(?, ?, ?, ?, ?, ?)
   `).run(description, category_badtime, category_noexist, category_badtime, uid, pid);
 }
 
@@ -503,9 +504,6 @@ app.post("/auth/check", (req, res) => {
 
   if(req.body.email && req.body.token) {
     let account = new Account(req.body.email);
-
-    console.log(account.token_read());
-    console.log(req.body.token);
 
     if(account.token_read() == req.body.token) {
       res.json({
