@@ -47,6 +47,8 @@ const expensive_stuff_limiter = ratelimits.rateLimit({
 
 app.use(general_limiter);
 app.use('/auth/login', expensive_stuff_limiter);
+app.use('/point/create', expensive_stuff_limiter);
+app.use('/point/update', expensive_stuff_limiter);
 
 app.disable('x-powered-by');
 
@@ -574,7 +576,7 @@ app.post("/point/list", (req, res) => {
 });
 
 app.post("/point/create", (req, res) => {
-  logger.info(`Route "/point/creat" triggered.`);
+  logger.info(`Route "/point/create" triggered.`);
 
   if(token_list.get(req.body.email) == req.body.token) {
     let autoapproved = false;
