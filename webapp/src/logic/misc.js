@@ -35,6 +35,12 @@ function descriptionFromPointTypes(point) {
     return false;
 }
 
+function cbtob(cbval) {
+    if(cbval == "on") return true;
+    return false;
+}
+
 export {
-    descriptionFromPointTypes
+    descriptionFromPointTypes,
+    cbtob
 };

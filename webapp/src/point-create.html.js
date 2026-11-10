@@ -1,8 +1,9 @@
 import { createPoint } from './logic/backend';
 import { invalidateLogin, loggedIn } from './logic/login';
-import { descriptionFromPointTypes } from './logic/misc';
+import { showErrorPopup } from './miscellaneous_elements/error_popup';
+import { cbtob } from './logic/misc';
 
-async function form_to_point() {
+async function formToPoint() {
     let pointdescription = document.getElementById("pointdescription");
     let lati = document.getElementById("lati");
     let long = document.getElementById("long");
@@ -13,15 +14,37 @@ async function form_to_point() {
     let accepts_organic = document.getElementById("accepts_organic");
     let accepts_biological = document.getElementById("accepts_biological");
 
+    let userdata = await loggedIn();
+    if(userdata) {
+        if(pointdescription && lati && long && time_close && time_open &&
+            accepts_biological && accepts_metal && accepts_organic &&
+            accepts_paper
+        ) {
+            let rt = await createPoint(
+                userdata.email,
+                userdata.token,
+                pointdescription.value,
+                lati.value,
+                long.value,
+                time_open.value,
+                time_close.value,
+                cbtob(accepts_paper.value),
+                cbtob(accepts_metal.value),
+                cbtob(accepts_organic.value),
+                cbtob(accepts_paper.value)
+            );
 
-    console.log(pointdescription.value);
-    console.log(lati.value);
-    console.log(long.value);
-    console.log(time_open.value);
-    console.log(time_close.value);
-    console.log(accepts_paper.value);
-    console.log(accepts_metal.value);
-    console.log(accepts_organic.value);
-    console.log(accepts_biological.value);
+            if(rt.type == "error") {
+                showErrorPopup("Erro na criação do ponto. A culpa provávelmente é nossa; entre em contato!");
+            } else if(rt.type == "okay") {
+                showErrorPopup("Ponto criado com sucesso!"); // TODO REDIRECIONAR
+            }
+        }
+    } else {
+        invalidateLogin();
+    }
 }
 
+document.getElementById("createbutton").addEventListener("click", () => {
+    formToPoint();
+});

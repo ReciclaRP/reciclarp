@@ -103,7 +103,7 @@ async function createReport(email, token, pid, report) {
     return await res.json();
 }
 
-async function createPoint(pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological) {
+async function createPoint(email, token, pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological) {
     let res = await fetch(
         `${API_URL}/point/create`,
         {
