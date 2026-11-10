@@ -16,7 +16,7 @@
     <div class="top-user-bar">
       <div class="content-row">
         <div class="cr-menu">
-          <a href="#">☰</a>
+          <a href="#" id="backbutton">&LeftArrow;</a>
         </div>
 
         <div class="cr-user">
@@ -36,9 +36,17 @@
 
       <div class="point-form">
         <div class="point-entry point-address">
-          <h3>Endereço</h3>
+          <h3>Endereço/Descrição</h3>
           
           <input type="text">
+          
+          <h4>Latitude</h4>
+          <input type="text">
+
+          <h4>Longitude</h4>
+          <input type="text">
+
+          <p>A latitude e longitude são necessárias para a criação de um ponto. Em aplicativos como o Google Maps, elas podem ser encontradas por meio do menu do clique direito.</p>
         </div>
 
         <div class="point-entry point-time">
@@ -108,5 +116,5 @@
     </div>
   </body>
 
-  <script src="/sitescripts/create-suggest.js"></script>
+  <script src="/src/point-create.html.js"></script>
 </html>

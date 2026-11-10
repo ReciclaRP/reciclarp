@@ -143,8 +143,20 @@ textarea {
 .point-entry {
     margin-bottom: 30px;
 }
+
 .point-entry h3 {
     margin: 0;
+}
+
+.point-entry h4 {
+    margin-bottom: 0;
+}
+
+.point-entry p {
+    color: rgb(26, 26, 26);
+
+    padding-top: 20px;
+    font-size: 10pt;
 }
 
 .point-entry p {
