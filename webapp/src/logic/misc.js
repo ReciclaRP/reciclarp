@@ -40,7 +40,19 @@ function cbtob(cbval) {
     return false;
 }
 
+function isBackOng() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const myParam = urlParams.get("back");
+
+    if(myParam == "ong") {
+        return true;
+    }
+
+    return false;
+}
+
 export {
     descriptionFromPointTypes,
-    cbtob
+    cbtob,
+    isBackOng
 };

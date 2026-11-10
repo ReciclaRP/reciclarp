@@ -88,7 +88,7 @@ if(!RESEND_SECRET) {
 }
 
 function bton(b) {
-  if(b) return 1;
+  if(b == true) return 1;
   return 0;
 }
 
@@ -609,10 +609,10 @@ app.post("/point/create", (req, res) => {
       req.body.data.long, 
       req.body.data.time_open,
       req.body.data.time_close,
-      bton(req.body.accepts_paper),
-      bton(req.body.accepts_metal),
-      bton(req.body.accepts_organic),
-      bton(req.body.accepts_biological),
+      bton(req.body.data.accepts_paper),
+      bton(req.body.data.accepts_metal),
+      bton(req.body.data.accepts_organic),
+      bton(req.body.data.accepts_biological),
       bton(autoapproved),
       user_account.get_id()
     )
@@ -645,10 +645,10 @@ app.post("/point/update", (req, res) => {
           req.body.data.long, 
           req.body.data.time_open,
           req.body.data.time_close,
-          bton(req.body.accepts_paper),
-          bton(req.body.accepts_metal),
-          bton(req.body.accepts_organic),
-          bton(req.body.accepts_biological)
+          bton(req.body.data.accepts_paper),
+          bton(req.body.data.accepts_metal),
+          bton(req.body.data.accepts_organic),
+          bton(req.body.data.accepts_biological)
         );
 
         res.json({

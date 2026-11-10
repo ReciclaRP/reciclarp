@@ -1,7 +1,7 @@
 import { createPoint } from './logic/backend';
 import { invalidateLogin, loggedIn } from './logic/login';
 import { showErrorPopup } from './miscellaneous_elements/error_popup';
-import { cbtob } from './logic/misc';
+import { cbtob, isBackOng } from './logic/misc';
 
 async function formToPoint() {
     let pointdescription = document.getElementById("pointdescription");
@@ -37,7 +37,9 @@ async function formToPoint() {
             if(rt.type == "error") {
                 showErrorPopup("Erro na criação do ponto. A culpa provávelmente é nossa; entre em contato!");
             } else if(rt.type == "okay") {
-                showErrorPopup("Ponto criado com sucesso!"); // TODO REDIRECIONAR
+                if(isBackOng()) {
+                    window.location.href = "/ong-menu.html"
+                }
             }
         }
     } else {
