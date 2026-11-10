@@ -420,6 +420,14 @@ class Point {
 
     return false;
   }
+
+  delete() {
+    db.prepare(
+      "DELETE * FROM point WHERE pid = ?"
+    ).run(this.pid);
+
+    this.created = false;
+  }
 }
 
 function get_point_list() {
@@ -651,6 +659,44 @@ app.post("/point/update", (req, res) => {
           bton(req.body.data.accepts_biological)
         );
 
+        res.json({
+          type: "okay"
+        });
+      } else {
+        res.json({
+          type: "error",
+    
+          description: "The data you seek to edit does not exist."
+        });
+      }
+    } else {
+      res.json({
+        type: "error",
+  
+        description: "Incorrect authentication information was provided."
+      });
+    }
+  } else {
+    res.json({
+      type: "error",
+
+      description: "Incorrect authentication information was provided."
+    });
+  }
+});
+
+// TODO: User edit history
+app.post("/point/remove", (req, res) => {
+  logger.info(`Route "/point/remove" triggered.`);
+
+  if(token_list.get(req.body.email) == req.body.token) {
+    let user_account = new Account(req.body.email);
+    if(user_account.is_ong()) {
+      let point = new Point();
+
+      if(point.read_from_pid(req.body.data.pid)) {
+        point.delete();
+        
         res.json({
           type: "okay"
         });

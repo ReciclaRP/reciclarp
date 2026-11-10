@@ -34,11 +34,13 @@ async function formToPoint() {
                 cbtob(accepts_paper.value)
             );
 
-            if(rt.type == "error") {
+            if(rt.type != "okay") {
                 showErrorPopup("Erro na criação do ponto. A culpa provávelmente é nossa; entre em contato!");
-            } else if(rt.type == "okay") {
+            } else {
                 if(isBackOng()) {
-                    window.location.href = "/ong-menu.html"
+                    window.location.href = "/ong-menu.html";
+                } else {
+                    window.location.href = "/map.html";
                 }
             }
         }
