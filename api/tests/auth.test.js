@@ -246,10 +246,32 @@ test('POST /auth/check does not write authentication tokens to logs', async () =
   });
 });
 
-// Currently unfixed: Account no longer bans an invalid address and /auth/login
-// has no other validation, so the route accepts it with "Action has been
-// taken." and queues (and logs) a one-time code for an undeliverable address.
-test.todo('POST /auth/login rejects an invalid e-mail without an internal error');
+test('POST /auth/login rejects an invalid e-mail without an internal error', async () => {
+  await withServer(async (server) => {
+    const response = await server.post(
+      '/auth/login',
+      { email: 'not-an-email' },
+      { localAddress: '127.0.0.203' },
+    );
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(response.json, {
+      type: 'error',
+      description:
+        'The account does not exist and could not be created. Did you use a real e-mail address?',
+    });
+
+    const db = openDatabase(server);
+    try {
+      const created = db
+        .prepare('SELECT * FROM user WHERE email = ?')
+        .get('not-an-email');
+      assert.equal(created, undefined, 'an invalid address must not become an account');
+    } finally {
+      db.close();
+    }
+  });
+});
 
 test('POST /auth/login leaves existing accounts untouched for an invalid e-mail', async () => {
   await withServer(async (server) => {

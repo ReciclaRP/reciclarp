@@ -79,8 +79,42 @@ test('the general limiter reports its remaining quota', async () => {
   });
 });
 
-// Known defect: the same expensive_stuff_limiter instance is mounted on
-// /auth/login, /point/create, and /point/update, so the three routes share one
-// two-minute quota. A successful login from an address therefore prevents that
-// same address from creating or updating a point.
-test.todo('login and point writes use independent rate-limit quotas');
+test('login and point writes use independent rate-limit quotas', async () => {
+  await withServer(async (server) => {
+    const address = '127.0.0.155';
+    const email = 'quota@example.com';
+    const { token } = await login(server, email, { localAddress: address });
+
+    const created = await server.post(
+      '/point/create',
+      {
+        email,
+        token,
+        data: {
+          pointdescription: 'Ponto criado após o login',
+          lati: -21.17,
+          long: -47.81,
+          time_open: '8:00',
+          time_close: '18:00',
+        },
+        accepts_paper: 1,
+        accepts_metal: 0,
+        accepts_organic: 0,
+        accepts_biological: 0,
+      },
+      { localAddress: address },
+    );
+
+    assert.equal(created.status, 200);
+    assert.deepEqual(created.json, { type: 'okay' });
+
+    // The login quota remains consumed, proving the point write above came
+    // from a different bucket rather than from an unused login allowance.
+    const secondLogin = await server.post(
+      '/auth/login',
+      { email: 'another@example.com' },
+      { localAddress: address },
+    );
+    assert.equal(secondLogin.status, 429);
+  });
+});

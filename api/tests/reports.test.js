@@ -94,8 +94,56 @@ test('POST /report/create persists a report for the authenticated user and point
   });
 });
 
-// Known defect: the placeholder count is fixed, but create_report() still
-// passes the category flags in the wrong order. `pointabsent` is stored as
-// category_full, `pointfull` is stored with no category, and `pointtime` is
-// stored as both category_noexist and category_badtime.
-test.todo('POST /report/create stores a report with the correct category');
+test('POST /report/create stores a report with the correct category', async () => {
+  await withServer(async (server) => {
+    const email = 'categories@example.com';
+    const { token } = await login(server, email);
+
+    const cases = [
+      {
+        description: 'O ponto não existe',
+        problem_kind: 'pointabsent',
+        expected: { category_noexist: 1, category_full: 0, category_badtime: 0 },
+      },
+      {
+        description: 'O ponto está cheio',
+        problem_kind: 'pointfull',
+        expected: { category_noexist: 0, category_full: 1, category_badtime: 0 },
+      },
+      {
+        description: 'O ponto tem horário errado',
+        problem_kind: 'pointtime',
+        expected: { category_noexist: 0, category_full: 0, category_badtime: 1 },
+      },
+    ];
+
+    for (const entry of cases) {
+      const response = await server.post('/report/create', {
+        email,
+        token,
+        description: entry.description,
+        problem_kind: entry.problem_kind,
+        pid: 1,
+      });
+
+      assert.equal(response.status, 200);
+      assert.deepEqual(response.json, { type: 'okay' });
+    }
+
+    const db = openDatabase(server);
+    try {
+      for (const entry of cases) {
+        const report = db
+          .prepare('SELECT * FROM report WHERE reportdescription = ?')
+          .get(entry.description);
+
+        assert.ok(report, `missing report for ${entry.problem_kind}`);
+        assert.equal(report.category_noexist, entry.expected.category_noexist);
+        assert.equal(report.category_full, entry.expected.category_full);
+        assert.equal(report.category_badtime, entry.expected.category_badtime);
+      }
+    } finally {
+      db.close();
+    }
+  });
+});
