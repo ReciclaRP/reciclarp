@@ -38,13 +38,13 @@
         <div class="point-entry point-address">
           <h3>Endereço/Descrição</h3>
           
-          <input type="text">
+          <input type="text" id="pointdescription">
           
           <h4>Latitude</h4>
-          <input type="text">
+          <input type="text" id="lati">
 
           <h4>Longitude</h4>
-          <input type="text">
+          <input type="text" id="long">
 
           <p>A latitude e longitude são necessárias para a criação de um ponto. Em aplicativos como o Google Maps, elas podem ser encontradas por meio do menu do clique direito.</p>
         </div>
@@ -54,7 +54,7 @@
 
           <div class="time-inputs-flex">
             <div>
-              <input type="time">
+              <input type="time" id="time_open">
             </div>
 
             <div>
@@ -62,7 +62,7 @@
             </div>
 
             <div>
-              <input type="time">
+              <input type="time" id="time_close">
             </div>
           </div>
         </div>
@@ -72,7 +72,7 @@
           
           <div class="checklabel-flex">
             <div>
-              <input type="checkbox">
+              <input type="checkbox" id="accepts_paper">
             </div>
 
             <div>
@@ -82,7 +82,7 @@
 
           <div class="checklabel-flex">
             <div>
-              <input type="checkbox">
+              <input type="checkbox" id="accepts_metal">
             </div>
 
             <div>
@@ -92,7 +92,7 @@
 
           <div class="checklabel-flex">
             <div>
-              <input type="checkbox">
+              <input type="checkbox" id="accepts_organic">
             </div>
 
             <div>
@@ -102,7 +102,7 @@
 
           <div class="checklabel-flex">
             <div>
-              <input type="checkbox">
+              <input type="checkbox" id="accepts_biological">
             </div>
 
             <div>
@@ -111,7 +111,7 @@
           </div>
         </div>
 
-        <input type="submit" value="Criar" onclick="putData('suggest');">
+        <input type="submit" value="Criar" id="createbutton">
       </div>
     </div>
   </body>

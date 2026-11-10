@@ -88,7 +88,7 @@ if(!RESEND_SECRET) {
 }
 
 function bton(b) {
-  if(b == true) return 1;
+  if(b) return 1;
   return 0;
 }
 

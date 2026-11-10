@@ -103,10 +103,43 @@ async function createReport(email, token, pid, report) {
     return await res.json();
 }
 
+async function createPoint(pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological) {
+    let res = await fetch(
+        `${API_URL}/point/create`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token,
+
+               data: {
+                    pointdescription: pointdescription,
+                    lati: lati,
+                    long: long,
+                    time_open: time_open,
+                    time_close: time_close,
+                    accepts_paper: accepts_paper,
+                    accepts_metal: accepts_metal,
+                    accepts_organic: accepts_organic,
+                    accepts_biological: accepts_biological
+               }
+            })
+        }
+    )
+
+    return await res.json();
+}
+
 export {
     pullMapData,
     sendLoginCode,
     getLoginToken,
     checkLoginState,
-    createReport
+    createReport,
+    createPoint
 };
