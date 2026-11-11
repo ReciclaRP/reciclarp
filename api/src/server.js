@@ -423,7 +423,7 @@ class Point {
 
   delete() {
     db.prepare(
-      "DELETE * FROM point WHERE pid = ?"
+      "DELETE FROM point WHERE pid = ?;"
     ).run(this.pid);
 
     this.created = false;
@@ -696,7 +696,7 @@ app.post("/point/remove", (req, res) => {
 
       if(point.read_from_pid(req.body.data.pid)) {
         point.delete();
-        
+
         res.json({
           type: "okay"
         });

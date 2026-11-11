@@ -1,6 +1,25 @@
 import { invalidateLogin, loggedIn } from './logic/login';
 import { descriptionFromPointTypes } from './logic/misc';
-import { pullMapData } from './logic/backend';
+import { pullMapData, deletePoint } from './logic/backend';
+
+async function queryActions() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const deleteaction = urlParams.get('deletepid');
+
+    if(deleteaction) {
+        let udata = await loggedIn();
+        if(udata) {
+            let okay = window.confirm("Tem certeza? Estes dados não poderão ser recuperados!");
+
+            if(okay) {
+                await deletePoint(udata.email, udata.token, deleteaction);
+                window.location.href = "/ong-menu.html";
+            }
+        } else {
+            invalidateLogin();
+        }
+    }
+}
 
 async function populateTable() {
     let table = document.getElementById("points-table");
@@ -21,6 +40,7 @@ async function populateTable() {
                 <td>${entry.long}</td>
                 <td>USERNAME_HERE</td>
                 <td>${entry.approved}</td>
+                <td><a href="/ong-menu.html?deletepid=${entry.pid}">Deletar</a></td>
             `
 
             table.append(row);
@@ -28,4 +48,5 @@ async function populateTable() {
     }
 }
 
-populateTable();
+await populateTable();
+await queryActions();

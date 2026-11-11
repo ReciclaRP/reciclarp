@@ -135,11 +135,36 @@ async function createPoint(email, token, pointdescription, lati, long, time_open
     return await res.json();
 }
 
+async function deletePoint(email, token, pid) {
+    let res = await fetch(
+        `${API_URL}/point/remove`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token,
+
+               data: {
+                    pid: pid
+               }
+            })
+        }
+    )
+
+    return await res.json();
+}
+
 export {
     pullMapData,
     sendLoginCode,
     getLoginToken,
     checkLoginState,
     createReport,
-    createPoint
+    createPoint,
+    deletePoint
 };
