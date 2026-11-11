@@ -36,8 +36,8 @@ async function populateTable() {
                 <td>${entry.time_open}</td>
                 <td>${entry.time_close}</td>
                 <td>${descriptionFromPointTypes(entry)}</td>
-                <td>${entry.lati}</td>
-                <td>${entry.long}</td>
+                <td>${String(entry.lati).substring(0,8)}...</td>
+                <td>${String(entry.long).substring(0,8)}...</td>
                 <td>USERNAME_HERE</td>
                 <td>${entry.approved}</td>
                 <td><a href="/ong-menu.html?deletepid=${entry.pid}">Deletar</a></td>

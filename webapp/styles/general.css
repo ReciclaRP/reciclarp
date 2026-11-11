@@ -228,3 +228,12 @@ table, th, td {
 th, td {
     text-align: left;
 }
+
+@media screen and (max-width: 600px) {
+  table, th, td {
+    padding: 0px 1px 0px 1px;
+  }
+    .table-content {
+    font-size: 6pt;
+  }
+}
