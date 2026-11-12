@@ -159,6 +159,46 @@ async function deletePoint(email, token, pid) {
     return await res.json();
 }
 
+async function invalidateLoginTokens(email, token) {
+    let res = await fetch(
+        `${API_URL}/auth/logout`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token
+            })
+        }
+    )
+
+    return await res.json();
+}
+
+async function deleteAccount(email, token) {
+    let res = await fetch(
+        `${API_URL}/auth/delete`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token
+            })
+        }
+    )
+
+    return await res.json();
+}
+
 export {
     pullMapData,
     sendLoginCode,
@@ -166,5 +206,7 @@ export {
     checkLoginState,
     createReport,
     createPoint,
-    deletePoint
+    deletePoint,
+    invalidateLoginTokens,
+    deleteAccount
 };

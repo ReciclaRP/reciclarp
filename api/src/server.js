@@ -2,6 +2,7 @@ const { Resend } = require('resend');
 
 const fs = require('fs');
 const process = require('node:process');
+const crypto = require("crypto");
 
 const defaultschema = require("./db/schema.js");
 
@@ -351,6 +352,8 @@ class Account {
 
   ban() {
     this.banned = 1;
+    token_list.invalidate(this.email);
+
     this.__update();
   }
 
@@ -390,6 +393,10 @@ class Account {
 
   get_id() {
     return this.id;
+  }
+
+  logout() {
+    token_list.invalidate(this.email);
   }
 
   exists() {
@@ -637,6 +644,34 @@ app.post("/auth/delete", (req, res) => {
           description: "Your account cannot be deleted, as it is possibly banned."
         });
       }
+    } else {
+      res.json({
+        type: "error",
+
+        description: "Incorrect authentication information was provided."
+      });
+    }
+  } else {
+    res.json({
+      type: "error",
+
+      description: "Malformed request"
+    });
+  }
+});
+
+app.post("/auth/logout", (req, res) => {
+  logger.info(`Route "/auth/logout" triggered.`);
+
+  if(req.body.email && req.body.token) {
+    let account = new Account(req.body.email);
+
+    if(account.token_read() == req.body.token) {
+      account.logout();
+
+      res.json({
+        type: "okay"
+      });
     } else {
       res.json({
         type: "error",

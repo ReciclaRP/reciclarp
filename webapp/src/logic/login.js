@@ -1,4 +1,4 @@
-import { checkLoginState, sendLoginCode, getLoginToken } from "./backend";
+import { checkLoginState, sendLoginCode, getLoginToken, invalidateLoginTokens, deleteAccount } from "./backend";
 
 function invalidateLogin() {
     document.cookie = "logintok=; expires = Thu, 01 Jan 1970 00:00:00 UTC;";
@@ -50,6 +50,30 @@ async function loggedIn() {
     return false;
 }
 
+async function voluntaryInvalidateLogin() {
+    let udata = await loggedIn();
+
+    if(udata) {
+        await invalidateLoginTokens(udata.email, udata.token);
+    }
+
+    invalidateLogin();
+}
+
+async function deleteAccountAndInvalidate() {
+    let udata = await loggedIn();
+
+    if(udata) {
+        let okay = window.confirm("Tem certeza? Estes dados não poderão ser recuperados!");
+
+        if(okay) {
+            await deleteAccount(udata.email, udata.token);
+        }
+    } else {
+        invalidateLogin();
+    }
+}
+
 async function requestLogin(email) {
     if(email) {
         let data = await sendLoginCode(email);
@@ -91,5 +115,7 @@ export {
     requestLogin,
     loggedIn,
     login,
-    invalidateLogin
+    invalidateLogin,
+    voluntaryInvalidateLogin,
+    deleteAccountAndInvalidate
 }
