@@ -10,6 +10,10 @@ Browser (PWA, vanilla JS)  ──HTTP/JSON──▶  Express API (api/src/server
 - The webapp is a **multi-page** Vite app: one `.html` file per page in
   `webapp/`, each loading a matching `webapp/src/<page>.html.js` module via
   `<script type="module">`.
+- Installability comes from `webapp/manifest.webmanifest` and the icons in
+  `webapp/images/icons/`, linked from every page's `<head>`. There is no
+  service worker: the app can be installed on mobile but has no offline mode,
+  and every screen still needs the API.
 - The API is the complete backend: authentication, authorization, business
   rules, validation, and data access all live in it. The webapp talks to it
   over plain `fetch` (JSON in, JSON out).
@@ -60,6 +64,7 @@ api/
   recicladb.sqlite       — local dev DB (gitignored)
 webapp/
   *.html                 — pages: index, map, menu, ong-menu, point-create, user-report, user-settings, user-suggest
+  manifest.webmanifest   — PWA install metadata (icons in images/icons/)
   src/<page>.html.js     — per-page entry modules
   src/logic/             — backend.js (fetch wrappers), login.js (cookie/session), misc.js
   src/miscellaneous_elements/ — shared UI bits (error popup)

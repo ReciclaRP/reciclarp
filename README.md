@@ -97,11 +97,13 @@ Abra o URL resultante em seu navegador.
 
 O webapp lerá arquivos contendo variáveis de ambiente colocados em seu diretório raiz (`webapp/.env` relativo a raiz do repositório).
 
+O webapp inclui um manifesto PWA (`webapp/manifest.webmanifest`), então pode ser instalado na tela inicial de um navegador móvel pelo próprio menu do navegador ("Instalar aplicativo" ou "Adicionar à tela inicial"). A instalação **não** habilita uso offline: não há service worker, e o aplicativo continua dependendo da API.
+
 ## Estrutura do repositório
 
 ```
-/webapp     - API REST (Express), acesso a dados, regras de negócio
-/frontend   - PWA em Vite
+/webapp     - PWA em Vite (páginas, estilos, imagens e manifesto de instalação)
+/api        - API REST (Express), acesso a dados, regras de negócio
 /cli        - Pequeno programa utilizado para interagir com a API. Pode ser ignorado.
 /db         - schema.sql, somente para referência
 /docs       - documentação acadêmica

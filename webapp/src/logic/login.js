@@ -27,8 +27,6 @@ async function loggedIn() {
         }
 
         if(token && email) {
-            console.log(email)
-            console.log(token);
             let data = await checkLoginState(email, token);
 
             console.log(data)

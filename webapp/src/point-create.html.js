@@ -3,6 +3,33 @@ import { invalidateLogin, loggedIn } from './logic/login';
 import { showErrorPopup } from './miscellaneous_elements/error_popup';
 import { cbtob, isBackOng } from './logic/misc';
 
+async function ongWarning() {
+    let el = document.getElementById("ong-acc-warning");
+    
+    if(el) {
+        let udata = await loggedIn();
+
+        if(udata.data.ong) {
+            el.style.display = "block";
+        }
+    }
+}
+
+function backButtonSet() {
+    let el = document.getElementById("backbutton");
+
+    if(el) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const back = urlParams.get('back');
+
+        if(back == "ong") {
+            el.href = "/ong-menu.html";
+        } else {
+            el.href = "/menu.html";
+        }
+    }
+}
+
 async function formToPoint() {
     let pointdescription = document.getElementById("pointdescription");
     let lati = document.getElementById("lati");
@@ -52,3 +79,6 @@ async function formToPoint() {
 document.getElementById("createbutton").addEventListener("click", () => {
     formToPoint();
 });
+
+ongWarning();
+backButtonSet();

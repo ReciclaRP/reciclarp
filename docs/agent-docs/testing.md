@@ -41,7 +41,7 @@ cd webapp && npx vitest run   # single pass (npm test = watch mode locally)
 
 - Runner: **vitest**. Suites: one `*-page.test.js` per page, plus
   `backend.test.js`, `login.test.js` (for `src/logic/`), `misc.test.js`,
-  `pages.test.js`.
+  `pages.test.js`, `manifest.test.js` (PWA manifest + page links).
 - **No jsdom**: `tests/support/dom.js` hand-rolls elements/documents/windows.
   Pattern: `vi.mock` the `src/logic/*` modules, `vi.resetModules()`, import
   the page module, assert on the stub DOM. See `index-page.test.js`.

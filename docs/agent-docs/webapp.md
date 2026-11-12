@@ -38,6 +38,11 @@ Shared code:
   conventions here; keep new pages consistent with them.
 - `fonts/` — Atkinson Hyperlegible Next (accessibility-oriented; licenses in
   `fonts/<name>/OFL.txt` — keep licenses with fonts).
+- `manifest.webmanifest` + `images/icons/icon-{192,512}.png` — PWA install
+  metadata; every page links it from `<head>`. Keep `start_url`/`scope` at
+  root and both icon sizes present. There is no service worker, so the app is
+  installable but **not** offline-capable. Changes are checked by
+  `tests/manifest.test.js`.
 - `sitescripts/` — draft scripts not wired into any page; check before
   assuming a feature exists.
 
