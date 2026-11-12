@@ -698,31 +698,49 @@ app.post("/point/create", (req, res) => {
   logger.info(`Route "/point/create" triggered.`);
 
   if(token_list.get(req.body.email) == req.body.token) {
-    let autoapproved = false;
-    let user_account = new Account(req.body.email);
-    let point = new Point();
+    if(req.body.data &&
+      req.body.data.pointdescription &&
+      req.body.data.lati &&
+      req.body.data.long &&
+      req.body.data.time_open &&
+      req.body.data.time_close &&
+      req.body.data.accepts_paper != undefined &&
+      req.body.data.accepts_metal != undefined &&
+      req.body.data.accepts_organic != undefined &&
+      req.body.data.accepts_biological != undefined
+    ) {
+      let autoapproved = false;
+      let user_account = new Account(req.body.email);
+      let point = new Point();
 
-    if(user_account.is_ong()) {
-      autoapproved = true;
+      if(user_account.is_ong()) {
+        autoapproved = true;
+      }
+
+      point.new(
+        String(req.body.data.pointdescription), 
+        req.body.data.lati,
+        req.body.data.long, 
+        req.body.data.time_open,
+        req.body.data.time_close,
+        bton(req.body.data.accepts_paper),
+        bton(req.body.data.accepts_metal),
+        bton(req.body.data.accepts_organic),
+        bton(req.body.data.accepts_biological),
+        bton(autoapproved),
+        user_account.get_id()
+      )
+
+      res.json({
+        type: "okay"
+      });
+    } else {
+      res.json({
+        type: "error",
+
+        description: "Not enough data was provided."
+      });
     }
-
-    point.new(
-      String(req.body.data.pointdescription), 
-      req.body.data.lati,
-      req.body.data.long, 
-      req.body.data.time_open,
-      req.body.data.time_close,
-      bton(req.body.data.accepts_paper),
-      bton(req.body.data.accepts_metal),
-      bton(req.body.data.accepts_organic),
-      bton(req.body.data.accepts_biological),
-      bton(autoapproved),
-      user_account.get_id()
-    )
-
-    res.json({
-      type: "okay"
-    });
   } else {
     res.json({
       type: "error",
@@ -742,21 +760,39 @@ app.post("/point/update", (req, res) => {
       let point = new Point();
 
       if(point.read_from_pid(req.body.data.pid)) {
-        point.update(
-          String(req.body.data.pointdescription), 
-          req.body.data.lati,
-          req.body.data.long, 
-          req.body.data.time_open,
-          req.body.data.time_close,
-          bton(req.body.data.accepts_paper),
-          bton(req.body.data.accepts_metal),
-          bton(req.body.data.accepts_organic),
-          bton(req.body.data.accepts_biological)
-        );
+        if(req.body.data &&
+          req.body.data.pointdescription &&
+          req.body.data.lati &&
+          req.body.data.long &&
+          req.body.data.time_open &&
+          req.body.data.time_close &&
+          req.body.data.accepts_paper != undefined &&
+          req.body.data.accepts_metal != undefined &&
+          req.body.data.accepts_organic != undefined &&
+          req.body.data.accepts_biological != undefined
+        ) {
+          point.update(
+            String(req.body.data.pointdescription), 
+            req.body.data.lati,
+            req.body.data.long, 
+            req.body.data.time_open,
+            req.body.data.time_close,
+            bton(req.body.data.accepts_paper),
+            bton(req.body.data.accepts_metal),
+            bton(req.body.data.accepts_organic),
+            bton(req.body.data.accepts_biological)
+          );
 
-        res.json({
-          type: "okay"
-        });
+          res.json({
+            type: "okay"
+          });
+        } else {
+          res.json({
+            type: "error",
+
+            description: "Not enough data was provided."
+          });
+        }
       } else {
         res.json({
           type: "error",
