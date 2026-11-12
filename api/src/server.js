@@ -304,10 +304,10 @@ class Account {
   __update() {
     db.prepare(`
       UPDATE user
-      SET uname = ?, email = ?, banned = ?, validated = ?
+      SET uname = ?, email = ?, banned = ?, validated = ?, ong = ?
       WHERE id = ?
     `).run(
-      this.name, this.email, this.banned, this.validated, this.id
+      this.name, this.email, this.banned, this.validated, this.ong, this.id
     );
   }
 
@@ -398,6 +398,11 @@ class Account {
 
   logout() {
     token_list.invalidate(this.email);
+  }
+
+  make_ong() {
+    this.ong = 1;
+    this.__update();
   }
 
   exists() {
@@ -673,6 +678,44 @@ app.post("/auth/logout", (req, res) => {
       res.json({
         type: "okay"
       });
+    } else {
+      res.json({
+        type: "error",
+
+        description: "Incorrect authentication information was provided."
+      });
+    }
+  } else {
+    res.json({
+      type: "error",
+
+      description: "Malformed request"
+    });
+  }
+});
+
+app.post("/auth/special", (req, res) => {
+  logger.info(`Route "/auth/special" triggered.`);
+
+  if(req.body.email && req.body.token) {
+    let account = new Account(req.body.email);
+
+    if(account.token_read() == req.body.token) {
+      if(req.body.code == ESCALATION_TOKEN){
+        if(!account.is_ong()) {
+          account.make_ong();
+        }
+        
+        res.json({
+          type: "okay"
+        });
+      } else {
+        res.json({
+          type: "error",
+
+          description: "The redeemable code was incorrect."
+        });
+      }
     } else {
       res.json({
         type: "error",

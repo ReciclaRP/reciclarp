@@ -199,6 +199,27 @@ async function deleteAccount(email, token) {
     return await res.json();
 }
 
+async function redeemCode(email, token, code) {
+    let res = await fetch(
+        `${API_URL}/auth/special`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token,
+               code: code
+            })
+        }
+    )
+
+    return await res.json();
+}
+
 export {
     pullMapData,
     sendLoginCode,
@@ -208,5 +229,6 @@ export {
     createPoint,
     deletePoint,
     invalidateLoginTokens,
-    deleteAccount
+    deleteAccount,
+    redeemCode
 };

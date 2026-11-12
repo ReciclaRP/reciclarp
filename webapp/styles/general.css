@@ -229,6 +229,22 @@ th, td {
     text-align: left;
 }
 
+.code-redeeming-options {
+    margin-bottom: 30px;
+}
+
+.code-redeeming-options h3 {
+    margin: 0;
+    padding: 0;
+
+    margin-bottom: 10px;
+}
+
+.code-redeeming-options p {
+    margin: 0;
+    padding: 0;
+}
+
 @media screen and (max-width: 600px) {
   table, th, td {
     padding: 0px 1px 0px 1px;
