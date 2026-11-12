@@ -718,7 +718,7 @@ app.post("/point/create", (req, res) => {
       }
 
       point.new(
-        String(req.body.data.pointdescription), 
+        xss.filterXSS(String(req.body.data.pointdescription)), 
         req.body.data.lati,
         req.body.data.long, 
         req.body.data.time_open,
@@ -772,7 +772,7 @@ app.post("/point/update", (req, res) => {
           req.body.data.accepts_biological != undefined
         ) {
           point.update(
-            String(req.body.data.pointdescription), 
+            xss.filterXSS(String(req.body.data.pointdescription)), 
             req.body.data.lati,
             req.body.data.long, 
             req.body.data.time_open,
