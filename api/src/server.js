@@ -27,6 +27,7 @@ const API_PORT = process.env.RECICLA_API_PORT || 3000;
 const RESEND_SECRET = process.env.RECICLA_RESEND_SECRET || false;
 const WEBAPP_URL = process.env.RECICLA_WEBAPP_URL || 'http://localhost:5173';
 const OTC_DURATION = process.env.RECICLA_OTC_DURATION || 15;
+const MAX_POINTDESCRIPTION_LEN = process.env.RECICLA_MAX_POINTDESCRIPTION_LEN || 200;
 
 let ESCALATION_TOKEN = process.env.RECICLA_ESCALATION_TOKEN;
 
@@ -718,7 +719,11 @@ app.post("/point/create", (req, res) => {
       }
 
       point.new(
-        xss.filterXSS(String(req.body.data.pointdescription)), 
+        xss.filterXSS(
+          String(
+            req.body.data.pointdescription
+          ).substring(0, MAX_POINTDESCRIPTION_LEN)
+        ), 
         req.body.data.lati,
         req.body.data.long, 
         req.body.data.time_open,
@@ -772,7 +777,11 @@ app.post("/point/update", (req, res) => {
           req.body.data.accepts_biological != undefined
         ) {
           point.update(
-            xss.filterXSS(String(req.body.data.pointdescription)), 
+            xss.filterXSS(
+              String(
+                req.body.data.pointdescription
+              ).substring(0, MAX_POINTDESCRIPTION_LEN)
+            ), 
             req.body.data.lati,
             req.body.data.long, 
             req.body.data.time_open,
