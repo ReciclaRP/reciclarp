@@ -8,6 +8,7 @@ const defaultschema = require("./db/schema.js");
 const express = require('express');
 const pino = require('pino');
 const cors = require('cors');
+const xss = require("xss");
 
 const app = express();
 const logger = pino();
@@ -24,6 +25,7 @@ require('dotenv').config();
 const API_PORT = process.env.RECICLA_API_PORT || 3000;
 const RESEND_SECRET = process.env.RECICLA_RESEND_SECRET || false;
 const WEBAPP_URL = process.env.RECICLA_WEBAPP_URL || 'http://localhost:5173';
+const OTC_DURATION = process.env.RECICLA_OTC_DURATION || 15;
 
 let ESCALATION_TOKEN = process.env.RECICLA_ESCALATION_TOKEN;
 
@@ -71,8 +73,17 @@ const points_limiter = ratelimits.rateLimit({
 	ipv6Subnet: 48
 });
 
+const tokengen_limiter = ratelimits.rateLimit({
+	windowMs: 1 * 60 * 1000,
+	limit: 1,
+	standardHeaders: 'draft-8', 
+	legacyHeaders: false,
+	ipv6Subnet: 48
+});
+
 app.use(general_limiter);
 app.use('/auth/login', expensive_stuff_limiter);
+app.use('/auth/token', tokengen_limiter);
 app.use('/point/create', points_limiter);
 app.use('/point/update', points_limiter);
 
@@ -114,21 +125,52 @@ const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"
 
 class Tickets {
   constructor() {
-    this.tickets = {}
+    this.tickets = {};
+    this.ticket_creation_times = {};
   }
 
   __newcode() {
-    return String(Math.floor(Math.random()*90000) + 10000);
+    return String(crypto.randomInt(100000, 1000000));
   }
 
   new(email) {
     this.tickets[email] = this.__newcode();
+    this.ticket_creation_times[email] = new Date();
+
     return this.tickets[email];
   }
 
+  purge() {
+    for(let email in this.ticket_creation_times) {
+      if(email in this.tickets){
+        let date_created = this.ticket_creation_times[email];
+
+        let difference_min = Math.floor(
+          Math.abs(
+            date_created - new Date()
+          ) / 1000 / 60
+        );
+
+        if(difference_min > OTC_DURATION) {
+          delete this.tickets[email];
+          delete this.ticket_creation_times[email];
+        }
+      } else {
+        delete this.ticket_creation_times[email];
+      }
+    }
+  }
+
   get(email) {
+    this.purge();
+
     if(email in this.tickets) {
-      return this.tickets[email];
+      let ret = this.tickets[email];
+
+      delete this.tickets[email];
+      delete this.ticket_creation_times[email];
+
+      return ret;
     } else {
       return false;
     }
@@ -748,9 +790,8 @@ app.post("/report/create", (req, res) => {
     if(req.body.description && req.body.problem_kind && req.body.pid) {
       const account = new Account(req.body.email);
 
-      // TODO: CUIDADO COM XSS!
       create_report(
-        req.body.description,
+        xss.filterXSS(req.body.description),
         req.body.problem_kind,
         account.id,
         req.body.pid
@@ -778,6 +819,10 @@ app.post("/report/create", (req, res) => {
 app.get('/api/ping', (req, res) => {
   res.send(req.ip);
 });
+
+setInterval(() => {
+  ticket_queue.purge();
+}, 60000);
 
 app.listen(API_PORT, () => {
   console.log(`API running on http://localhost:${API_PORT}`);
