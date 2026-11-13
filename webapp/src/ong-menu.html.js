@@ -1,6 +1,6 @@
 import { invalidateLogin, loggedIn } from './logic/login';
 import { descriptionFromPointTypes } from './logic/misc';
-import { pullMapData, deletePoint, app, approvePoint} from './logic/backend';
+import { pullMapData, deletePoint, approvePoint} from './logic/backend';
 
 async function queryActions() {
     const urlParams = new URLSearchParams(window.location.search);

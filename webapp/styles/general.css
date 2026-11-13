@@ -235,6 +235,10 @@ th, td {
     text-align: left;
 }
 
+.table-content a {
+    margin-right: 5px;
+}
+
 .code-redeeming-options {
     margin-bottom: 30px;
 }
