@@ -494,12 +494,49 @@ class Point {
     return false;
   }
 
-  delete() {
-    db.prepare(
-      "DELETE FROM point WHERE pid = ?;"
-    ).run(this.pid);
+  log_access(uid) {
+    if(this.created) {
+      let now = new Date();
+      let this_hour = now.toLocaleString('pt-BR').substring(12).substring(0,5);
 
-    this.created = false;
+      db.prepare(`
+        INSERT INTO access (hour_accessed, uid, pid)
+        VALUES(?, ?, ?)
+      `).run(this_hour, uid, this.pid);
+
+      return true;
+    }
+
+    return false;
+  }
+
+  times_accessed() {
+    if(this.created) {
+      let amt = Number(db.prepare(
+        `
+          SELECT COUNT(*) from access
+          WHERE pid = ?;
+        `
+      ).get(this.pid));
+
+      return amt;
+    }
+    
+    return false;
+  }
+
+  delete() {
+    if(this.created) {
+      db.prepare(
+        "DELETE FROM point WHERE pid = ?;"
+      ).run(this.pid);
+
+      this.created = false;
+
+      return true;
+    }
+
+    return false;
   }
 }
 
@@ -849,7 +886,7 @@ app.post("/point/update", (req, res) => {
         res.json({
           type: "error",
     
-          description: "The data you seek to edit does not exist."
+          description: "The data you seek to access does not exist."
         });
       }
     } else {
@@ -887,7 +924,7 @@ app.post("/point/remove", (req, res) => {
         res.json({
           type: "error",
     
-          description: "The data you seek to edit does not exist."
+          description: "The data you seek to access does not exist."
         });
       }
     } else {
@@ -895,6 +932,43 @@ app.post("/point/remove", (req, res) => {
         type: "error",
   
         description: "Incorrect authentication information was provided."
+      });
+    }
+  } else {
+    res.json({
+      type: "error",
+
+      description: "Incorrect authentication information was provided."
+    });
+  }
+});
+
+app.post("/point/access/log", (req, res) => {
+  logger.info(`Route "/point/access/log" triggered.`);
+
+  if(token_list.get(req.body.email) == req.body.token) {
+    if(req.body.pid != undefined) {
+      let account = new Account(req.body.email);
+      let point = new Point();
+
+      if(point.read_from_pid(req.body.pid)) {
+        point.log_access(account.get_id());
+        
+        res.json({
+          type: "okay"
+        });
+      } else {
+        res.json({
+          type: "error",
+    
+          description: "The data you seek to access does not exist."
+        });
+      }
+    } else {
+      res.json({
+        type: "error",
+  
+        description: "Insufficient data was provided."
       });
     }
   } else {

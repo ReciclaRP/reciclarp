@@ -1,7 +1,23 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { pullMapData } from './logic/backend';
+import { pullMapData, log, logMapVisit } from './logic/backend';
 import { descriptionFromPointTypes } from './logic/misc';
+import { loggedIn, invalidateLogin } from './logic/login';
+
+async function logVisit() {
+    let el = document.getElementById("open-in-maps");
+
+    if(el && el.dataset.pid) {
+        let udata = await loggedIn();
+        if(udata) {
+            logMapVisit(udata.email, udata.token, el.dataset.pid);
+
+            window.location.href = el.href;
+        } else {
+            invalidateLogin();
+        }
+    }
+}
 
 function openPointPopup(point, x, y) {
     let popup = document.getElementById("location-popup");
@@ -37,7 +53,7 @@ function openPointPopup(point, x, y) {
 
         <div class="button-options">
             <div>
-                <a href="https://maps.google.com/?q=${point.lati},${point.long}" class="maps-open-button">Abrir no Maps</a>
+                <a href="https://maps.google.com/?q=${point.lati},${point.long}" id="open-in-maps" data-pid="${point.pid}" class="maps-open-button">Abrir no Maps</a>
             </div>
 
             <div>
@@ -105,3 +121,7 @@ await createMap(
 );
 
 console.log(await pullMapData());
+
+document.getElementById("open-in-maps").addEventListener("click", () => {
+    logMapVisit();
+});

@@ -220,6 +220,25 @@ async function redeemCode(email, token, code) {
     return await res.json();
 }
 
+async function logMapVisit(email, token, pid) {
+    let res = await fetch(
+        `${API_URL}/point/access/log`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token,
+               pid: pid
+            })
+        }
+    )
+}
+
 export {
     pullMapData,
     sendLoginCode,
@@ -230,5 +249,6 @@ export {
     deletePoint,
     invalidateLoginTokens,
     deleteAccount,
-    redeemCode
+    redeemCode,
+    logMapVisit
 };
