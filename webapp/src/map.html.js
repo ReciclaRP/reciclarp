@@ -1,6 +1,6 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { pullMapData, log, logMapVisit } from './logic/backend';
+import { pullMapData, logMapVisit } from './logic/backend';
 import { descriptionFromPointTypes } from './logic/misc';
 import { loggedIn, invalidateLogin } from './logic/login';
 
@@ -123,5 +123,5 @@ await createMap(
 console.log(await pullMapData());
 
 document.getElementById("open-in-maps").addEventListener("click", () => {
-    logMapVisit();
+    logVisit();
 });
