@@ -90,12 +90,14 @@ async function putMapMarkers(map, clickedfunction) {
     let data = await pullMapData();
 
     for(let point of data) {
-        L.marker([point.lati, point.long])
-            .addTo(map)
-            .on(
-                'click', 
-                clickedfunction
-            );
+        if(point.approved) {
+            L.marker([point.lati, point.long])
+                .addTo(map)
+                .on(
+                    'click', 
+                    clickedfunction
+                );
+        }
     }
 }
 

@@ -159,6 +159,30 @@ async function deletePoint(email, token, pid) {
     return await res.json();
 }
 
+async function approvePoint(email, token, pid) {
+    let res = await fetch(
+        `${API_URL}/point/approve`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token,
+
+               data: {
+                    pid: pid
+               }
+            })
+        }
+    )
+
+    return await res.json();
+}
+
 async function invalidateLoginTokens(email, token) {
     let res = await fetch(
         `${API_URL}/auth/logout`,
@@ -250,5 +274,6 @@ export {
     invalidateLoginTokens,
     deleteAccount,
     redeemCode,
-    logMapVisit
+    logMapVisit,
+    approvePoint
 };

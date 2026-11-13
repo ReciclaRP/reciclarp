@@ -525,6 +525,22 @@ class Point {
     return false;
   }
 
+  approve() {
+    if(this.created) {
+      db.prepare(
+        `
+        UPDATE point
+        SET approved = ?
+        WHERE pid = ?;
+        `
+      ).run(1, this.pid);
+      
+      return true;
+    }
+
+    return false;
+  }
+
   delete() {
     if(this.created) {
       db.prepare(
@@ -916,6 +932,43 @@ app.post("/point/remove", (req, res) => {
 
       if(point.read_from_pid(req.body.data.pid)) {
         point.delete();
+
+        res.json({
+          type: "okay"
+        });
+      } else {
+        res.json({
+          type: "error",
+    
+          description: "The data you seek to access does not exist."
+        });
+      }
+    } else {
+      res.json({
+        type: "error",
+  
+        description: "Incorrect authentication information was provided."
+      });
+    }
+  } else {
+    res.json({
+      type: "error",
+
+      description: "Incorrect authentication information was provided."
+    });
+  }
+});
+
+app.post("/point/approve", (req, res) => {
+  logger.info(`Route "/point/approve" triggered.`);
+
+  if(token_list.get(req.body.email) == req.body.token) {
+    let user_account = new Account(req.body.email);
+    if(user_account.is_ong()) {
+      let point = new Point();
+
+      if(point.read_from_pid(req.body.data.pid)) {
+        point.approve();
 
         res.json({
           type: "okay"
