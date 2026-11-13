@@ -4,13 +4,14 @@ na hora do login */
 const LOGIN_VALID_DAYS = 7;
 
 import { requestLogin, login, loggedIn } from './logic/login.js';
+import { showErrorPopup } from './miscellaneous_elements/error_popup.js';
 
 function displayLoginTechnicalFailure() {
-    console.log("Login failure!");
+    showErrorPopup("Muitas tentativas de login. Espere 2 minutos e tente novamente.");
 }
 
 function displayLoginBadCodeFailure() {
-    console.log("Login failure! (wrong code)")
+    showErrorPopup("Código incorreto. Espere 2 minutos e tente novamente");
 }
 
 function redirectToMap() {
