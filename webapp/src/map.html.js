@@ -66,6 +66,10 @@ function openPointPopup(point, x, y) {
         </div>
     </div>`;
 
+    document.getElementById("open-in-maps").addEventListener("click", () => {
+        logVisit();
+    });
+
     popup.style.display = "block";
     popup.style.left = `${x}px`;
     popup.style.top = `${y}px`;
@@ -119,9 +123,3 @@ await createMap(
     -21.1684, 
     -47.8109
 );
-
-console.log(await pullMapData());
-
-document.getElementById("open-in-maps").addEventListener("click", () => {
-    logVisit();
-});
