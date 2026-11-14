@@ -29,7 +29,6 @@ async function loggedIn() {
         if(token && email) {
             let data = await checkLoginState(email, token);
 
-            console.log(data)
             if(data && data.type && data.type == "okay") {
                 return {
                     email: email,

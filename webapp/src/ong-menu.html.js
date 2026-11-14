@@ -3,6 +3,7 @@ import { descriptionFromPointTypes } from './logic/misc';
 import { pullMapData, deletePoint, approvePoint, getPointAccesses } from './logic/backend';
 import { Chart, registerables } from "chart.js";
 import { pointAccessNo } from './logic/points';
+import { create_json } from './logic/csv_export';
 
 async function queryActions() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -95,6 +96,17 @@ async function queryActions() {
     }
 }
 
+async function exportPointsTable() {
+    let json = await create_json();
+
+    let el_show = document.getElementById("bottom-export-window");
+    el_show.style.display = "block";
+    
+    let el_datalink = document.getElementById("data-object-link");
+    el_datalink.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(json));
+    el_datalink.setAttribute("download", "exported.json");
+}
+
 async function populateTable() {
     let table = document.getElementById("points-table");
 
@@ -150,3 +162,7 @@ async function populateTable() {
 
 await populateTable();
 await queryActions();
+
+document.getElementById("download-export").addEventListener("click", () => {
+    exportPointsTable();
+});
