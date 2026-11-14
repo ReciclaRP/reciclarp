@@ -308,19 +308,42 @@ th, td {
     transition: 0.3s;
 }
 
-    .x-button:hover {
+.x-button:hover {
     background-color: black;
     color: white;
 }
 
+.indev-project-warning {
+    background-color: rgba(252, 252, 202, 0.993);
+    
+    margin: auto;
+
+    margin-top: 50px;
+
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 8px;
+    border-color: rgb(73, 73, 0);
+
+    padding: 0px 10px 0px 10px;
+
+    width: 30vw;
+}
+
 @media screen and (max-width: 600px) {
-.chart-space h3 {
-    font-size: 13pt;
+    .indev-project-warning {
+    width: 80vw;
+    }
 }
-.chart-space {
-    width: 80%;
-    height: 80%;
-}
+
+@media screen and (max-width: 600px) {
+    .chart-space h3 {
+        font-size: 13pt;
+    }
+    .chart-space {
+        width: 80%;
+        height: 80%;
+    }
 }
 
 @media screen and (max-width: 600px) {
