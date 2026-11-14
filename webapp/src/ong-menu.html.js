@@ -1,7 +1,7 @@
 import { invalidateLogin, loggedIn } from './logic/login';
 import { descriptionFromPointTypes } from './logic/misc';
 import { pullMapData, deletePoint, approvePoint, getPointAccesses } from './logic/backend';
-
+import { Chart, registerables } from "chart.js";
 async function queryActions() {
     const urlParams = new URLSearchParams(window.location.search);
     const deleteaction = urlParams.get('deletepid');
@@ -104,3 +104,25 @@ async function populateTable() {
 
 await populateTable();
 await queryActions();
+
+const ctx = document.getElementById('statsChart');
+
+Chart.register(...registerables);
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        datasets: [{
+        label: '# of Votes',
+        data: [12, 19, 3, 5, 2, 3],
+        borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+        y: {
+            beginAtZero: true
+        }
+        }
+    }
+});
