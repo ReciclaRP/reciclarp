@@ -257,7 +257,7 @@ th, td {
 
 .primary-space {
     display: none;
-    
+
     position: fixed;
     z-index: 999999999;
 
@@ -274,7 +274,7 @@ th, td {
     background-color: white;
 
     width: 50vw;
-    height: 50vh;
+    height: 80vh;
 
     border-style: solid;
     border-color: black;

@@ -42,7 +42,51 @@ async function queryActions() {
 
         if(udata) {
             let accesses = await getPointAccesses(udata.email, udata.token, stataction, 100);
-            console.log(accesses);
+            let el = document.getElementById("stats-overlay");
+            let ptno = document.getElementById("ptno");
+
+            ptno.textContent = `${stataction}`;
+
+            el.style.display = "block";
+
+            const ctx = document.getElementById('statsChart');
+            
+            let bucket = Array(24);
+
+            for(let entry of accesses.data) {
+                let hr = Number(entry.hour_accessed.split(":")[0]);
+                
+                if(bucket[hr]) {
+                    bucket[hr] += 1;
+                } else {
+                    bucket[hr] = 1;
+                }
+            }
+            
+            Chart.register(...registerables);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        '0h', '1h', '2h', '3h', '4h', '5h', '6h', '7h',
+                        '8h', '9h', '10h', '11h', '12h', '13h', '14h', '15h',
+                        '16h', '17h', '19h', '20h', '21h', '23h'
+                    ],
+                    datasets: [{
+                    label: 'nº de acessos',
+                    data: bucket,
+                    borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                    }
+                }
+            });
         } else {
             invalidateLogin();
         }
@@ -101,28 +145,5 @@ async function populateTable() {
         }
     }
 }
-
 await populateTable();
 await queryActions();
-
-const ctx = document.getElementById('statsChart');
-
-Chart.register(...registerables);
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [{
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
-        borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-        y: {
-            beginAtZero: true
-        }
-        }
-    }
-});
