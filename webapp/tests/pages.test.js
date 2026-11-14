@@ -30,9 +30,27 @@ const pages = [
     ids: ['ongmenu'],
   },
   {
-    file: 'account-settings.html',
-    script: null,
-    ids: [],
+    file: 'ong-menu.html',
+    script: 'src/ong-menu.html.js',
+    ids: ['points-table', 'stats-overlay', 'ptno', 'statsChart'],
+  },
+  {
+    file: 'point-create.html',
+    script: 'src/point-create.html.js',
+    ids: [
+      'backbutton',
+      'ong-acc-warning',
+      'pointdescription',
+      'lati',
+      'long',
+      'time_open',
+      'time_close',
+      'accepts_paper',
+      'accepts_metal',
+      'accepts_organic',
+      'accepts_biological',
+      'createbutton',
+    ],
   },
   {
     file: 'user-report.html',
@@ -49,23 +67,18 @@ const pages = [
     ],
   },
   {
-    file: 'ong-menu.html',
-    script: 'src/ong-menu.html.js',
-    ids: ['points-table'],
-  },
-  {
-    file: 'ong-create.html',
-    script: 'sitescripts/create-suggest.js',
-    ids: [],
+    file: 'user-settings.html',
+    script: 'src/user-settings.html.js',
+    ids: [
+      'special-code-input',
+      'special-code-submit',
+      'logout-button',
+      'deleteacc-button',
+    ],
   },
   {
     file: 'user-suggest.html',
     script: 'sitescripts/create-suggest.js',
-    ids: [],
-  },
-  {
-    file: 'ong-pontos.html',
-    script: null,
     ids: [],
   },
 ];
@@ -139,17 +152,25 @@ describe('web application pages', () => {
     expect(html).toMatch(/id="ongmenu"\s+style="display: none;"/);
   });
 
-  it('both point suggestion forms use the structure expected by create-suggest.js', () => {
-    for (const file of ['user-suggest.html', 'ong-create.html']) {
-      const html = readPage(file);
-      const form = html.slice(html.indexOf('class="point-form"'));
+  it('the point creation page collects every field required by the API', () => {
+    const html = readPage('point-create.html');
 
-      expect(form.match(/type="text"/g)).toHaveLength(1);
-      expect(form.match(/type="time"/g)).toHaveLength(2);
-      expect(form.match(/type="checkbox"/g)).toHaveLength(4);
-      expect(form.match(/type="submit"/g)).toHaveLength(1);
-      expect(form).toContain("putData('suggest')");
-    }
+    expect(html).toContain('class="point-form"');
+    expect(html).toMatch(/<input type="time" id="time_open">/);
+    expect(html).toMatch(/<input type="time" id="time_close">/);
+    expect(html).toContain('id="ong-acc-warning"');
+    expect(html).toContain('maxlength="250"');
+  });
+
+  it('the point suggestion form uses the structure expected by create-suggest.js', () => {
+    const html = readPage('user-suggest.html');
+    const form = html.slice(html.indexOf('class="point-form"'));
+
+    expect(form.match(/type="text"/g)).toHaveLength(1);
+    expect(form.match(/type="time"/g)).toHaveLength(2);
+    expect(form.match(/type="checkbox"/g)).toHaveLength(4);
+    expect(form.match(/type="submit"/g)).toHaveLength(1);
+    expect(form).toContain("putData('suggest')");
   });
 
   it('the report page offers every problem category supported by the API', () => {
@@ -169,11 +190,20 @@ describe('web application pages', () => {
     expect(html).toContain('<p id="raddr">');
     expect(html).toContain('<span id="itemnames">');
   });
+
+  it('every page references the favicon that ships with the app', () => {
+    expect(existsSync(path.join(webappRoot, 'favicon.ico'))).toBe(true);
+
+    for (const { file } of pages) {
+      const html = readPage(file);
+
+      expect(html, `${file} should reference the favicon`).toContain(
+        '<link rel="icon" href="/favicon.ico" />',
+      );
+    }
+  });
 });
 
-// Known defect: pages link to /user-settings.html, but the implemented account
-// page is named /account-settings.html.
+// Known defect: menu.html and user-settings.html link to /account-settings.html,
+// but the implemented account page is named /user-settings.html.
 it.todo('all internal .html links resolve to existing pages');
-
-// Known defect: pages request /favicon.svg, which is not present in webapp/.
-it.todo('all pages reference an existing favicon');

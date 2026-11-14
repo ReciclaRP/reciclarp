@@ -14,7 +14,7 @@ not replace it.
 
 - Files under `api/tests/` and `webapp/tests/` — **writing and improving tests
   is the agents' primary contribution to this codebase.**
-- Documentation: `AGENTS.md`'s doc index, `docs/agent-docs/*`, and
+- Documentation: `AGENTS.md`'s doc index, `docs/agent-docs/*`,`docs/wip*` and
   contributor-facing parts of `README.md`, when asked.
 - The environment (running servers, databases, scratch files outside the repo)
   needed to investigate and verify behavior.
@@ -78,7 +78,7 @@ Run each project separately (they have their own `package.json`/`node_modules`):
 cd api && npm install && npm run dev     # node --watch src/server.js
 cd api && npm test                       # node --test (node:test runner)
 
-# Webapp (needs RECICLA_API_URL or works against hardcoded localhost:3000)
+# Webapp (API base URL is hardcoded to http://localhost:3000)
 cd webapp && npm install && npm run dev  # vite
 cd webapp && npm test                    # vitest — watch mode locally; use `npx vitest run` for one pass
 ```
@@ -89,13 +89,13 @@ DB (see `api/tests/support/harness.js`) — no mocking of the backend.
 
 ## Critical gotchas
 
-- **Rate limits will bite you**: `/auth/login`, `/point/create`, `/point/update` allow **1 request per 2 minutes per IP**; everything else 100/15min. Testing endpoints manually requires waiting or restarting the server.
-- **No Resend key = "guest mode"**: without `RECICLA_RESEND_SECRET`, one-time login codes are printed to the API's log instead of being emailed. Use this locally.
+- **Rate limits will bite you**: `/auth/login`, `/point/create`, `/point/update` allow **1 request per 2 minutes per IP**; `/auth/token` allows 1 per minute; everything else 100/15min. Testing endpoints manually requires waiting or restarting the server.
+- **No Resend key = "guest mode"**: without `RECICLA_RESEND_SECRET`, six-digit one-time login codes are printed to the API's log instead of being emailed. Use this locally.
 - **Auth is one-time-code (OTC) by email**, tokens kept **in memory** (`Tickets`/`Tokens` classes) — restarting the API invalidates all logins. The webapp stores `logintok`/`loginmail` cookies.
-- **API responses always have the envelope `{ type: "okay" | "error", description?, ... }`** — preserve this shape in new/changed endpoints.
+- **API responses use the envelope `{ type: "okay" | "error", description?, ... }`** — preserve this shape in new/changed endpoints. Exceptions: `POST /point/list` returns a bare array, and `GET /api/ping` returns the client address as text.
 - **All API routes are POST** (including reads like `/point/list`), except `GET /api/ping`.
+- **ONG moderation and access telemetry**: points created by citizens need approval (`approved=0`); ONGs can approve/update/remove points and read per-point access logs through `/point/access/*`. The map displays only approved points.
 - **The webapp's API URL is hardcoded** to `http://localhost:3000` in `webapp/src/logic/backend.js`. Don't assume environment wiring works.
-- The README's "Estrutura do repositório" section is outdated (mentions `/frontend` which doesn't exist).
 - `api/recicladb.sqlite` is a local dev database (gitignored); don't commit it.
 
 ## Conventions
@@ -115,6 +115,7 @@ DB (see `api/tests/support/harness.js`) — no mocking of the backend.
 | [`testing.md`](docs/agent-docs/testing.md) | You're writing or running tests: harness details, test file inventory, CI behavior, how to add tests. |
 | [`security.md`](docs/agent-docs/security.md) | You need the threat model, an attack chain, the meaning of a `SEC-xxx` finding, or the remediation spec paired with `api/tests/security.regression.test.js`. |
 | [`conventions-and-context.md`](docs/agent-docs/conventions-and-context.md) | You need team rules in depth, the academic document index in `docs/`, or background on scope/backlog. |
+| [`../wip/`](docs/wip/) | You need working notes or proposals that are not yet reflected in the academic deliverables (for example, the current doc-drift report). |
 
 When you add significant new guiding material, put it in `docs/agent-docs/` and
 add a row here.

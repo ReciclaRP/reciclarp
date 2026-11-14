@@ -29,7 +29,7 @@ function findPointByDescription(server, description) {
 }
 
 function pointPayload(overrides = {}) {
-  const { data = {}, ...flags } = overrides;
+  const { data = {}, ...root } = overrides;
 
   return {
     data: {
@@ -38,13 +38,13 @@ function pointPayload(overrides = {}) {
       long: -47.81,
       time_open: '8:00',
       time_close: '18:00',
+      accepts_paper: 1,
+      accepts_metal: 0,
+      accepts_organic: 1,
+      accepts_biological: 0,
       ...data,
     },
-    accepts_paper: 1,
-    accepts_metal: 0,
-    accepts_organic: 1,
-    accepts_biological: 0,
-    ...flags,
+    ...root,
   };
 }
 
@@ -78,11 +78,11 @@ test('POST /point/update rejects requests without valid authentication', async (
         long: -47.8,
         time_open: '8:00',
         time_close: '17:00',
+        accepts_paper: 1,
+        accepts_metal: 1,
+        accepts_organic: 0,
+        accepts_biological: 0,
       },
-      accepts_paper: 1,
-      accepts_metal: 1,
-      accepts_organic: 0,
-      accepts_biological: 0,
     };
 
     const missing = await server.post('/point/update', payload);
@@ -108,11 +108,11 @@ test('a regular user cannot update points', async () => {
         long: -47.8,
         time_open: '8:00',
         time_close: '17:00',
+        accepts_paper: 1,
+        accepts_metal: 1,
+        accepts_organic: 0,
+        accepts_biological: 0,
       },
-      accepts_paper: 1,
-      accepts_metal: 1,
-      accepts_organic: 0,
-      accepts_biological: 0,
     });
 
     assert.deepEqual(response.json, {
@@ -144,17 +144,17 @@ test('an ONG cannot update a point that does not exist', async () => {
         long: -47.8,
         time_open: '8:00',
         time_close: '17:00',
+        accepts_paper: 0,
+        accepts_metal: 0,
+        accepts_organic: 0,
+        accepts_biological: 0,
       },
-      accepts_paper: 0,
-      accepts_metal: 0,
-      accepts_organic: 0,
-      accepts_biological: 0,
     });
 
     assert.equal(response.status, 200);
     assert.deepEqual(response.json, {
       type: 'error',
-      description: 'The data you seek to edit does not exist.',
+      description: 'The data you seek to access does not exist.',
     });
   });
 });
@@ -224,13 +224,17 @@ test('material flags are normalised to database booleans on creation', async () 
     const { token } = await login(server, email);
 
     const response = await server.post('/point/create', {
-      ...pointPayload({ data: { pointdescription: 'Ponto com flags' } }),
+      ...pointPayload({
+        data: {
+          pointdescription: 'Ponto com flags',
+          accepts_paper: true,
+          accepts_metal: '0',
+          accepts_organic: '',
+          accepts_biological: 1,
+        },
+      }),
       email,
       token,
-      accepts_paper: true,
-      accepts_metal: '0',
-      accepts_organic: '',
-      accepts_biological: 1,
     });
 
     assert.deepEqual(response.json, { type: 'okay' });
@@ -270,11 +274,11 @@ test('an ONG can update an existing point and thereby approve it', async () => {
         long: -47.75,
         time_open: '6:00',
         time_close: '20:00',
+        accepts_paper: 0,
+        accepts_metal: 1,
+        accepts_organic: 0,
+        accepts_biological: 1,
       },
-      accepts_paper: 0,
-      accepts_metal: 1,
-      accepts_organic: 0,
-      accepts_biological: 1,
     });
 
     assert.equal(response.status, 200);
@@ -314,11 +318,11 @@ test('material flags are normalised to database booleans on update', async () =>
         long: -47.83,
         time_open: '8:00',
         time_close: '17:00',
+        accepts_paper: true,
+        accepts_metal: '0',
+        accepts_organic: '',
+        accepts_biological: 1,
       },
-      accepts_paper: true,
-      accepts_metal: '0',
-      accepts_organic: '',
-      accepts_biological: 1,
     });
 
     assert.deepEqual(response.json, { type: 'okay' });
@@ -335,5 +339,126 @@ test('material flags are normalised to database booleans on update', async () =>
     } finally {
       db.close();
     }
+  });
+});
+
+test('POST /point/approve lets an ONG approve a pending point without changing its creator', async () => {
+  await withServer(async (server) => {
+    const creatorEmail = 'approve-creator@example.com';
+    const creator = await login(server, creatorEmail);
+
+    await server.post('/point/create', {
+      ...pointPayload({ data: { pointdescription: 'Ponto aguardando aprovação' } }),
+      email: creatorEmail,
+      token: creator.token,
+    });
+
+    const pending = findPointByDescription(server, 'Ponto aguardando aprovação');
+    assert.ok(pending);
+    assert.equal(pending.approved, 0);
+
+    const citizenEmail = 'not-the-ong@example.com';
+    const citizen = await login(server, citizenEmail);
+    const refused = await server.post('/point/approve', {
+      email: citizenEmail,
+      token: citizen.token,
+      data: { pid: pending.pid },
+    });
+
+    assert.deepEqual(refused.json, {
+      type: 'error',
+      description: 'Incorrect authentication information was provided.',
+    });
+    assert.equal(findPointByDescription(server, 'Ponto aguardando aprovação').approved, 0);
+
+    const admin = await login(server, 'admin@example.com');
+    const approved = await server.post('/point/approve', {
+      email: 'admin@example.com',
+      token: admin.token,
+      data: { pid: pending.pid },
+    });
+
+    assert.equal(approved.status, 200);
+    assert.deepEqual(approved.json, { type: 'okay' });
+
+    const point = findPointByDescription(server, 'Ponto aguardando aprovação');
+    assert.equal(point.approved, 1);
+    assert.equal(point.creator, pending.creator, 'approval must preserve the original creator');
+  });
+});
+
+test('POST /point/approve rejects a point that does not exist', async () => {
+  await withServer(async (server) => {
+    const admin = await login(server, 'admin@example.com');
+
+    const response = await server.post('/point/approve', {
+      email: 'admin@example.com',
+      token: admin.token,
+      data: { pid: 999_999 },
+    });
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(response.json, {
+      type: 'error',
+      description: 'The data you seek to access does not exist.',
+    });
+  });
+});
+
+test('POST /point/remove deletes a point and is restricted to ONGs', async () => {
+  await withServer(async (server) => {
+    const admin = await login(server, 'admin@example.com');
+
+    const created = await server.post('/point/create', {
+      ...pointPayload({ data: { pointdescription: 'Ponto a ser removido' } }),
+      email: 'admin@example.com',
+      token: admin.token,
+    });
+    assert.deepEqual(created.json, { type: 'okay' });
+
+    const point = findPointByDescription(server, 'Ponto a ser removido');
+    assert.ok(point);
+
+    const citizenEmail = 'not-the-ong@example.com';
+    const citizen = await login(server, citizenEmail);
+    const refused = await server.post('/point/remove', {
+      email: citizenEmail,
+      token: citizen.token,
+      data: { pid: point.pid },
+    });
+
+    assert.deepEqual(refused.json, {
+      type: 'error',
+      description: 'Incorrect authentication information was provided.',
+    });
+    assert.ok(findPointByDescription(server, 'Ponto a ser removido'));
+
+    const removed = await server.post('/point/remove', {
+      email: 'admin@example.com',
+      token: admin.token,
+      data: { pid: point.pid },
+    });
+
+    assert.equal(removed.status, 200);
+    assert.deepEqual(removed.json, { type: 'okay' });
+    assert.equal(findPointByDescription(server, 'Ponto a ser removido'), undefined);
+  });
+});
+
+test('POST /point/remove rejects a point that does not exist', async () => {
+  await withServer(async (server) => {
+    const admin = await login(server, 'admin@example.com');
+
+    const response = await server.post('/point/remove', {
+      email: 'admin@example.com',
+      token: admin.token,
+      data: { pid: 999_999 },
+    });
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(response.json, {
+      type: 'error',
+      description: 'The data you seek to access does not exist.',
+    });
   });
 });

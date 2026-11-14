@@ -9,12 +9,22 @@ const {
   __RECICLA_POINT_SEED,
 } = require('../src/db/schema.js');
 
-test('default schema declares the user, point, and report tables', () => {
+test('default schema declares the user, point, report, and access tables', () => {
   const schema = __RECICLA_DEFAULT_SCHEMA();
 
   assert.match(schema, /CREATE TABLE user\s*\(/);
   assert.match(schema, /CREATE TABLE point\s*\(/);
   assert.match(schema, /CREATE TABLE report\s*\(/);
+  assert.match(schema, /CREATE TABLE access\s*\(/);
+});
+
+test('the access table records an hour and references the user and point', () => {
+  const schema = __RECICLA_DEFAULT_SCHEMA();
+
+  assert.match(schema, /aid INTEGER PRIMARY KEY AUTOINCREMENT/);
+  assert.match(schema, /hour_accessed TEXT NOT NULL/);
+  assert.match(schema, /FOREIGN KEY\(uid\) REFERENCES user\(id\)/);
+  assert.match(schema, /FOREIGN KEY\(pid\) REFERENCES point\(pid\)/);
 });
 
 test('the user table requires unique, non-null e-mail addresses', () => {

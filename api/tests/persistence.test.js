@@ -28,11 +28,11 @@ test('accounts and points survive an API restart without reseeding', async () =>
         long: -47.71,
         time_open: '9:00',
         time_close: '18:00',
+        accepts_paper: 1,
+        accepts_metal: 0,
+        accepts_organic: 0,
+        accepts_biological: 0,
       },
-      accepts_paper: 1,
-      accepts_metal: 0,
-      accepts_organic: 0,
-      accepts_biological: 0,
     });
     assert.deepEqual(created.json, { type: 'okay' });
 

@@ -20,6 +20,9 @@ export function makeElement(overrides = {}) {
     append(...nodes) {
       this.children.push(...nodes);
     },
+    prepend(...nodes) {
+      this.children.unshift(...nodes);
+    },
     appendChild(node) {
       this.children.push(node);
       return node;
@@ -36,11 +39,17 @@ export function makeElement(overrides = {}) {
 }
 
 export function makeDocument(elements = {}) {
+  const body = makeElement({ tagName: 'BODY' });
+
   return {
+    body,
     cookie: '',
     elements,
     getElementById(id) {
       return this.elements[id] ?? null;
+    },
+    getElementsByTagName(tagName) {
+      return String(tagName).toLowerCase() === 'body' ? [body] : [];
     },
     querySelector(selector) {
       return this.elements[selector] ?? null;

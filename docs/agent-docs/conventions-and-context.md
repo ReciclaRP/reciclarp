@@ -23,7 +23,9 @@ This is a course project for *Laboratório de Engenharia de Software* (ADS,
 Fatec Ribeirão Preto, 2026), team: Adrian Teixeira, Heitor Lopes, Victor
 Breno. Documentation and deliverables follow the course's required format
 (equity/RA headers, "Trilha B", etc.). The backlog is the functional source of
-truth — the running software may diverge from `docs/` mid-sprint.
+truth — the running software may diverge from `docs/` mid-sprint. Current
+divergences (SGBD, auth model, schema names, test plan) are catalogued in
+[`../wip/doc-drift.md`](../wip/doc-drift.md).
 
 ## Academic documents in `docs/`
 
@@ -37,13 +39,14 @@ truth — the running software may diverge from `docs/` mid-sprint.
 | `plano-de-testes.md` | Test plan / strategy. |
 | `prototipo.md` | Figma prototype walkthrough; maps screens to user stories. **Also records real decisions**, e.g. auth was changed to one-time-code instead of email+password. |
 | `rastreabilidade.md` | Traceability matrix: user story → use case → entity → table → test. Useful for finding where a requirement is implemented/tested. |
+| `wip/` | Working notes that are not academic deliverables. `wip/doc-drift.md` records where the academic documents above diverge from the current code and proposes concrete corrections for a human to apply. |
 
 ## Scope reminders
 
 - Core scope: map of collection points (citizen view), collaborative point
-  registration, ONG moderation (approve/edit/remove points), citizen reports,
-  OTC email authentication. Nothing about payments, routing, or gamification
-  is in scope.
+  registration, ONG moderation (approve/edit/remove points, per-point access
+  statistics), citizen reports, OTC email authentication. Nothing about
+  payments, routing, or gamification is in scope.
 - `cli/` exists only as a manual API helper — don't invest effort there unless
   asked.
 - Licenses matter: the project is AGPL-3.0 and distributes font licenses

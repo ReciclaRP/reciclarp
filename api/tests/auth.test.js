@@ -38,7 +38,7 @@ test('POST /auth/login creates an account and sends a one-time code', async () =
       type: 'okay',
       description: 'Action has been taken.',
     });
-    assert.match(result.code, /^\d{5}$/);
+    assert.match(result.code, /^\d{6}$/);
 
     const db = openDatabase(server);
     try {
@@ -242,6 +242,54 @@ test('POST /auth/check does not write authentication tokens to logs', async () =
     assert.ok(checkLogs.length > 0, 'the route should still emit its normal log line');
     for (const line of checkLogs) {
       assert.ok(!line.includes(token), `the token leaked into a log line: ${line}`);
+    }
+  });
+});
+
+test('POST /auth/logout invalidates the active session', async () => {
+  await withServer(async (server) => {
+    const email = 'logout-user@example.com';
+    const { token } = await login(server, email);
+
+    const logout = await server.post('/auth/logout', { email, token });
+    assert.equal(logout.status, 200);
+    assert.deepEqual(logout.json, { type: 'okay' });
+
+    const check = await server.post('/auth/check', { email, token });
+    assert.deepEqual(check.json, {
+      type: 'error',
+      description: 'Incorrect authentication information was provided.',
+    });
+  });
+});
+
+test('POST /auth/logout refuses an incorrect token and keeps the session', async () => {
+  await withServer(async (server) => {
+    const email = 'logout-wrong-token@example.com';
+    const { token } = await login(server, email);
+
+    const logout = await server.post('/auth/logout', { email, token: 'not-the-token' });
+    assert.equal(logout.status, 200);
+    assert.deepEqual(logout.json, {
+      type: 'error',
+      description: 'Incorrect authentication information was provided.',
+    });
+
+    const check = await server.post('/auth/check', { email, token });
+    assert.equal(check.json.type, 'okay');
+  });
+});
+
+test('POST /auth/logout rejects malformed requests', async () => {
+  await withServer(async (server) => {
+    for (const body of [{}, { email: 'a@b.com' }, { token: '123456' }]) {
+      const response = await server.post('/auth/logout', body);
+
+      assert.equal(response.status, 200);
+      assert.deepEqual(response.json, {
+        type: 'error',
+        description: 'Malformed request',
+      });
     }
   });
 });

@@ -35,9 +35,17 @@ vi.mock('../src/logic/backend.js', () => ({
   getLoginToken: vi.fn(),
   checkLoginState: vi.fn(),
   createReport: vi.fn(),
+  logMapVisit: vi.fn(),
 }));
 
-import { makeDocument, makeElement } from './support/dom.js';
+vi.mock('../src/logic/login.js', () => ({
+  requestLogin: vi.fn(),
+  login: vi.fn(),
+  loggedIn: vi.fn(),
+  invalidateLogin: vi.fn(),
+}));
+
+import { makeDocument, makeElement, makeWindow } from './support/dom.js';
 
 const points = [
   {
@@ -64,28 +72,58 @@ const points = [
     accepts_metal: 0,
     accepts_organic: 1,
     accepts_biological: 1,
+    approved: 1,
+  },
+  {
+    pid: 3,
+    pointdescription: 'Ecoponto Pendente',
+    lati: -21.2,
+    long: -47.8,
+    time_open: '9:00',
+    time_close: '17:00',
+    accepts_paper: 1,
+    accepts_metal: 0,
+    accepts_organic: 0,
+    accepts_biological: 0,
     approved: 0,
   },
 ];
 
-async function loadPage({ availablePoints = points } = {}) {
+const approvedPoints = points.filter((point) => point.approved);
+
+async function loadPage({ availablePoints = points, loggedInResult } = {}) {
   vi.resetModules();
   leaflet.markers.length = 0;
 
   const backend = await import('../src/logic/backend.js');
   backend.pullMapData.mockResolvedValue(availablePoints);
 
+  const login = await import('../src/logic/login.js');
+  login.loggedIn.mockResolvedValue(
+    loggedInResult === undefined
+      ? { email: 'person@example.com', token: 'token-1', data: { ong: false } }
+      : loggedInResult,
+  );
+
   const mapElement = makeElement();
   const popup = makeElement();
+  const openInMaps = makeElement({
+    dataset: { pid: '1' },
+    href: 'https://maps.google.com/?q=-21.17,-47.81',
+  });
   const elements = {
     '#map': mapElement,
     'location-popup': popup,
+    'open-in-maps': openInMaps,
   };
+  const window = makeWindow();
+
   vi.stubGlobal('document', makeDocument(elements));
+  vi.stubGlobal('window', window);
 
   await import('../src/map.html.js');
 
-  return { backend, mapElement, popup };
+  return { backend, login, mapElement, popup, openInMaps, window };
 }
 
 describe('map page', () => {
@@ -118,19 +156,27 @@ describe('map page', () => {
     expect(leaflet.tileLayerAddTo).toHaveBeenCalledWith(leaflet.mapObject);
   });
 
-  it('adds one marker per point returned by the API', async () => {
+  it('adds one marker per approved point returned by the API', async () => {
     await loadPage();
 
-    expect(leaflet.L.marker).toHaveBeenCalledTimes(points.length);
-    expect(leaflet.markers.map((marker) => marker.coordinates)).toEqual([
-      [points[0].lati, points[0].long],
-      [points[1].lati, points[1].long],
-    ]);
+    expect(leaflet.L.marker).toHaveBeenCalledTimes(approvedPoints.length);
+    expect(leaflet.markers.map((marker) => marker.coordinates)).toEqual(
+      approvedPoints.map((point) => [point.lati, point.long]),
+    );
 
     for (const marker of leaflet.markers) {
       expect(marker.addTo).toHaveBeenCalledWith(leaflet.mapObject);
       expect(marker.on).toHaveBeenCalledWith('click', expect.any(Function));
     }
+  });
+
+  it('does not mark points that are still awaiting approval', async () => {
+    await loadPage();
+
+    expect(leaflet.markers.map((marker) => marker.coordinates)).not.toContainEqual([
+      points[2].lati,
+      points[2].long,
+    ]);
   });
 
   it('does not create markers when the API returns no points', async () => {
@@ -174,6 +220,44 @@ describe('map page', () => {
     expect(popup.innerHTML).toContain('8:00 - 18:00');
     expect(popup.innerHTML).toContain('biológicos, orgânicos.');
     expect(popup.innerHTML).toContain('/user-report.html?pid=2');
+  });
+
+  it('logs the visit and follows the Google Maps link when a session exists', async () => {
+    const { backend, openInMaps, window } = await loadPage();
+    const marker = leaflet.markers[0];
+
+    await marker.handlers.click({
+      latlng: { lat: points[0].lati, lng: points[0].long },
+      containerPoint: { x: 12, y: 34 },
+    });
+
+    expect(openInMaps.listeners.click).toHaveLength(1);
+    await openInMaps.click();
+
+    await vi.waitFor(() => {
+      expect(backend.logMapVisit).toHaveBeenCalledWith(
+        'person@example.com',
+        'token-1',
+        '1',
+      );
+    });
+    expect(window.location.href).toBe(openInMaps.href);
+  });
+
+  it('invalidates the session instead of logging a visit when logged out', async () => {
+    const { backend, login, openInMaps } = await loadPage({ loggedInResult: false });
+    const marker = leaflet.markers[0];
+
+    await marker.handlers.click({
+      latlng: { lat: points[0].lati, lng: points[0].long },
+      containerPoint: { x: 12, y: 34 },
+    });
+    await openInMaps.click();
+
+    await vi.waitFor(() => {
+      expect(login.invalidateLogin).toHaveBeenCalled();
+    });
+    expect(backend.logMapVisit).not.toHaveBeenCalled();
   });
 
   it('leaves the popup hidden when no point matches the click', async () => {
