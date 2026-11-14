@@ -28,6 +28,7 @@ const RESEND_SECRET = process.env.RECICLA_RESEND_SECRET || false;
 const WEBAPP_URL = process.env.RECICLA_WEBAPP_URL || 'http://localhost:5173';
 const OTC_DURATION = process.env.RECICLA_OTC_DURATION || 15;
 const MAX_POINTDESCRIPTION_LEN = process.env.RECICLA_MAX_POINTDESCRIPTION_LEN || 200;
+const PROXY_NO = process.env.RECICLA_PROXY_NO || 0;
 
 let ESCALATION_TOKEN = process.env.RECICLA_ESCALATION_TOKEN;
 
@@ -90,6 +91,8 @@ app.use('/point/create', points_limiter);
 app.use('/point/update', points_limiter);
 
 app.disable('x-powered-by');
+
+app.set("trust proxy", PROXY_NO);
 
 if(!DB_EXISTED) {
   const ADMIN_EMAIL = process.env.RECICLA_ADMIN_EMAIL || "test@example.com";
