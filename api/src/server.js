@@ -648,7 +648,7 @@ app.post("/auth/token", (req, res) => {
   logger.info(`Route "/auth/token" triggered.`);
 
   if(req.body.email && req.body.code) {
-    if(ticket_queue.get(req.body.email) == req.body.code) {
+    if(ticket_queue.get(req.body.email) === req.body.code) {
       let account = new Account(req.body.email);
 
       res.json({
@@ -677,7 +677,7 @@ app.post("/auth/check", (req, res) => {
   if(req.body.email && req.body.token) {
     let account = new Account(req.body.email);
 
-    if(account.token_read() == req.body.token) {
+    if(account.token_read() === req.body.token) {
       res.json({
         type: "okay",
 
@@ -709,7 +709,7 @@ app.post("/auth/delete", (req, res) => {
   if(req.body.email && req.body.token) {
     let account = new Account(req.body.email);
 
-    if(account.token_read() == req.body.token) {
+    if(account.token_read() === req.body.token) {
       const success = account.delete();
 
       if(success){
@@ -745,7 +745,7 @@ app.post("/auth/logout", (req, res) => {
   if(req.body.email && req.body.token) {
     let account = new Account(req.body.email);
 
-    if(account.token_read() == req.body.token) {
+    if(account.token_read() === req.body.token) {
       account.logout();
 
       res.json({
@@ -773,8 +773,8 @@ app.post("/auth/special", (req, res) => {
   if(req.body.email && req.body.token) {
     let account = new Account(req.body.email);
 
-    if(account.token_read() == req.body.token) {
-      if(req.body.code == ESCALATION_TOKEN){
+    if(account.token_read() === req.body.token) {
+      if(req.body.code === ESCALATION_TOKEN){
         if(!account.is_ong()) {
           account.make_ong();
         }
@@ -814,7 +814,7 @@ app.post("/point/list", (req, res) => {
 app.post("/point/create", (req, res) => {
   logger.info(`Route "/point/create" triggered.`);
 
-  if(token_list.get(req.body.email) == req.body.token) {
+  if(token_list.get(req.body.email) === req.body.token) {
     if(req.body.data &&
       req.body.data.pointdescription &&
       req.body.data.lati &&
@@ -875,7 +875,7 @@ app.post("/point/create", (req, res) => {
 app.post("/point/update", (req, res) => {
   logger.info(`Route "/point/update" triggered.`);
 
-  if(token_list.get(req.body.email) == req.body.token) {
+  if(token_list.get(req.body.email) === req.body.token) {
     let user_account = new Account(req.body.email);
     if(user_account.is_ong()) {
       let point = new Point();
@@ -945,7 +945,7 @@ app.post("/point/update", (req, res) => {
 app.post("/point/remove", (req, res) => {
   logger.info(`Route "/point/remove" triggered.`);
 
-  if(token_list.get(req.body.email) == req.body.token) {
+  if(token_list.get(req.body.email) === req.body.token) {
     let user_account = new Account(req.body.email);
     if(user_account.is_ong()) {
       let point = new Point();
@@ -982,7 +982,7 @@ app.post("/point/remove", (req, res) => {
 app.post("/point/approve", (req, res) => {
   logger.info(`Route "/point/approve" triggered.`);
 
-  if(token_list.get(req.body.email) == req.body.token) {
+  if(token_list.get(req.body.email) === req.body.token) {
     let user_account = new Account(req.body.email);
     if(user_account.is_ong()) {
       let point = new Point();
@@ -1019,7 +1019,7 @@ app.post("/point/approve", (req, res) => {
 app.post("/point/access/log", (req, res) => {
   logger.info(`Route "/point/access/log" triggered.`);
 
-  if(token_list.get(req.body.email) == req.body.token) {
+  if(token_list.get(req.body.email) === req.body.token) {
     if(req.body.pid != undefined) {
       let account = new Account(req.body.email);
       let point = new Point();
@@ -1056,7 +1056,7 @@ app.post("/point/access/log", (req, res) => {
 app.post("/point/access/get", (req, res) => {
   logger.info(`Route "/point/access/get" triggered.`);
 
-  if(token_list.get(req.body.email) == req.body.token) {
+  if(token_list.get(req.body.email) === req.body.token) {
     if(req.body.pid != undefined && req.body.no) {
       let account = new Account(req.body.email);
       if(account.is_ong()) {
@@ -1102,7 +1102,7 @@ app.post("/point/access/get", (req, res) => {
 app.post("/point/access/no", (req, res) => {
   logger.info(`Route "/point/access/no" triggered.`);
 
-  if(token_list.get(req.body.email) == req.body.token) {
+  if(token_list.get(req.body.email) === req.body.token) {
     if(req.body.pid != undefined) {
       let account = new Account(req.body.email);
       if(account.is_ong()) {
@@ -1148,7 +1148,7 @@ app.post("/point/access/no", (req, res) => {
 app.post("/report/create", (req, res) => {
   logger.info(`Route "/report/create" triggered.`);
 
-  if(token_list.get(req.body.email) == req.body.token) {
+  if(token_list.get(req.body.email) === req.body.token) {
     if(req.body.description && req.body.problem_kind && req.body.pid) {
       const account = new Account(req.body.email);
 

@@ -113,6 +113,7 @@ DB (see `api/tests/support/harness.js`) — no mocking of the backend.
 | [`api.md`](docs/agent-docs/api.md) | You're touching `api/src/server.js`: route inventory, env vars, rate limits, the `Account`/`Tickets`/`Tokens` classes, schema and seeding. |
 | [`webapp.md`](docs/agent-docs/webapp.md) | You're touching the frontend: page/module mapping, the `<page>.html.js` pattern, logic modules, styles, DOM stubbing. |
 | [`testing.md`](docs/agent-docs/testing.md) | You're writing or running tests: harness details, test file inventory, CI behavior, how to add tests. |
+| [`security.md`](docs/agent-docs/security.md) | You need the threat model, an attack chain, the meaning of a `SEC-xxx` finding, or the remediation spec paired with `api/tests/security.regression.test.js`. |
 | [`conventions-and-context.md`](docs/agent-docs/conventions-and-context.md) | You need team rules in depth, the academic document index in `docs/`, or background on scope/backlog. |
 
 When you add significant new guiding material, put it in `docs/agent-docs/` and

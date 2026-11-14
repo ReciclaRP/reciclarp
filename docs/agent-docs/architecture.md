@@ -49,7 +49,7 @@ Consequences to keep in mind:
 - **Tokens and OTC codes are in-memory**: an API restart logs everyone out.
 - Any authenticated request is `POST <route>` with `{ email, token, ... }`;
   the server re-derives the `Account` from the email and compares
-  `account.token_read() == token`. There is no middleware; each route does
+  `account.token_read() === token`. There is no middleware; each route does
   this check itself.
 - `RECICLA_ESCALATION_TOKEN` is generated/loaded at boot but currently unused
   by any route.

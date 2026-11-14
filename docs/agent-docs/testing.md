@@ -21,7 +21,7 @@ cd api && npm test        # node --test
 - Runner: **node:test** (built-in), plain `require` CommonJS.
 - Suites: `auth.test.js`, `auth-delete.test.js`, `health.test.js`,
   `persistence.test.js`, `points.test.js`, `rate-limits.test.js`,
-  `reports.test.js`, `schema.test.js`.
+  `reports.test.js`, `schema.test.js`, `security.regression.test.js`.
 - **No backend mocking.** `tests/support/harness.js` compacts/spawns the real
   `src/server.js` on a free port against a temp SQLite DB, and exposes helpers
   (`openDatabase`, `startApiServer`, raw HTTP requests — including
@@ -32,6 +32,13 @@ cd api && npm test        # node --test
 - Remember the rate limits: tests that hit `/auth/login` or `/point/*` more
   than once per 2 min per IP must use distinct `localAddress` values — see
   `rate-limits.test.js` for how.
+- `security.regression.test.js` is a **partially skip-gated red suite**: each
+  skipped test fails against the current code on purpose and names the finding
+  (`SEC-xxx`) it encodes. Activate a test by deleting its `skip` in the same PR
+  that applies the fix. Do not "fix" a skipped test by weakening its
+  assertion; the finding and the remediation spec live in
+  [`security.md`](security.md). SEC-001, SEC-002 and SEC-003 are already active
+  (13 active / 12 skipped as of 2026-11-14).
 
 ## Webapp (`webapp/`)
 
