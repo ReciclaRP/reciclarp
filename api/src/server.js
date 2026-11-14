@@ -541,6 +541,26 @@ class Point {
     return false;
   }
 
+  get_accesses(n) {
+    if(this.created) {
+      if(n < 1) n = 1;
+      if(n > 1000) n = 1000;
+
+      let ret = db.prepare(
+        `
+          SELECT * from access
+          WHERE pid = ?
+          ORDER BY aid DESC
+          LIMIT ?;
+        `
+      ).all(this.pid, n);
+
+      return ret;
+    }
+
+    return false;
+  }
+
   delete() {
     if(this.created) {
       db.prepare(
@@ -1015,6 +1035,52 @@ app.post("/point/access/log", (req, res) => {
           type: "error",
     
           description: "The data you seek to access does not exist."
+        });
+      }
+    } else {
+      res.json({
+        type: "error",
+  
+        description: "Insufficient data was provided."
+      });
+    }
+  } else {
+    res.json({
+      type: "error",
+
+      description: "Incorrect authentication information was provided."
+    });
+  }
+});
+
+app.post("/point/access/get", (req, res) => {
+  logger.info(`Route "/point/access/get" triggered.`);
+
+  if(token_list.get(req.body.email) == req.body.token) {
+    if(req.body.pid != undefined && req.body.no) {
+      let account = new Account(req.body.email);
+      if(account.is_ong()) {
+        let point = new Point();
+
+        if(point.read_from_pid(req.body.pid)) {
+          let data = point.get_accesses(Number(req.body.no));
+          
+          res.json({
+            type: "okay",
+            data: data
+          });
+        } else {
+          res.json({
+            type: "error",
+      
+            description: "The data you seek to access does not exist."
+          });
+        }
+      } else {
+        res.json({
+          type: "error",
+
+          description: "Incorrect authentication information was provided."
         });
       }
     } else {

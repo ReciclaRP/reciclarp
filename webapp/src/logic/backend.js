@@ -263,6 +263,28 @@ async function logMapVisit(email, token, pid) {
     )
 }
 
+async function getPointAccesses(email, token, pid, no) {
+    let res = await fetch(
+        `${API_URL}/point/access/get`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token,
+               pid: pid,
+               no: no
+            })
+        }
+    )
+
+    return await res.json();
+}
+
 export {
     pullMapData,
     sendLoginCode,
@@ -275,5 +297,6 @@ export {
     deleteAccount,
     redeemCode,
     logMapVisit,
-    approvePoint
+    approvePoint,
+    getPointAccesses
 };

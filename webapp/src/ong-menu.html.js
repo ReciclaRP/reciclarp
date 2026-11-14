@@ -1,11 +1,12 @@
 import { invalidateLogin, loggedIn } from './logic/login';
 import { descriptionFromPointTypes } from './logic/misc';
-import { pullMapData, deletePoint, approvePoint} from './logic/backend';
+import { pullMapData, deletePoint, approvePoint, getPointAccesses } from './logic/backend';
 
 async function queryActions() {
     const urlParams = new URLSearchParams(window.location.search);
     const deleteaction = urlParams.get('deletepid');
     const approveaction =  urlParams.get('approvepid');
+    const stataction =  urlParams.get('statpid');
 
     if(deleteaction) {
         let udata = await loggedIn();
@@ -31,6 +32,17 @@ async function queryActions() {
                 await approvePoint(udata.email, udata.token, approveaction);
                 window.location.href = "/ong-menu.html";
             }
+        } else {
+            invalidateLogin();
+        }
+    }
+
+    if(stataction) {
+        let udata = await loggedIn();
+
+        if(udata) {
+            let accesses = await getPointAccesses(udata.email, udata.token, stataction, 100);
+            console.log(accesses);
         } else {
             invalidateLogin();
         }
@@ -73,6 +85,14 @@ async function populateTable() {
                 approve_link.href = `/ong-menu.html?approvepid=${entry.pid}`;
             
                 options_available.append(approve_link);
+            }
+
+            if(entry.approved) {
+                let stats_link = document.createElement("a");
+                stats_link.textContent = "Estatísticas";
+                stats_link.href = `/ong-menu.html?statpid=${entry.pid}`;
+
+                options_available.append(stats_link);
             }
 
             row.append(options_available);
