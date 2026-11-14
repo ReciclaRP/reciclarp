@@ -512,12 +512,12 @@ class Point {
 
   times_accessed() {
     if(this.created) {
-      let amt = Number(db.prepare(
+      let amt = db.prepare(
         `
           SELECT COUNT(*) from access
           WHERE pid = ?;
         `
-      ).get(this.pid));
+      ).get(this.pid)["COUNT(*)"];
 
       return amt;
     }
@@ -1064,6 +1064,52 @@ app.post("/point/access/get", (req, res) => {
 
         if(point.read_from_pid(req.body.pid)) {
           let data = point.get_accesses(Number(req.body.no));
+          
+          res.json({
+            type: "okay",
+            data: data
+          });
+        } else {
+          res.json({
+            type: "error",
+      
+            description: "The data you seek to access does not exist."
+          });
+        }
+      } else {
+        res.json({
+          type: "error",
+
+          description: "Incorrect authentication information was provided."
+        });
+      }
+    } else {
+      res.json({
+        type: "error",
+  
+        description: "Insufficient data was provided."
+      });
+    }
+  } else {
+    res.json({
+      type: "error",
+
+      description: "Incorrect authentication information was provided."
+    });
+  }
+});
+
+app.post("/point/access/no", (req, res) => {
+  logger.info(`Route "/point/access/no" triggered.`);
+
+  if(token_list.get(req.body.email) == req.body.token) {
+    if(req.body.pid != undefined) {
+      let account = new Account(req.body.email);
+      if(account.is_ong()) {
+        let point = new Point();
+
+        if(point.read_from_pid(req.body.pid)) {
+          let data = point.times_accessed();
           
           res.json({
             type: "okay",

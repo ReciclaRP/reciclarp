@@ -285,6 +285,27 @@ async function getPointAccesses(email, token, pid, no) {
     return await res.json();
 }
 
+async function getPointAccessesAmount(email, token, pid) {
+    let res = await fetch(
+        `${API_URL}/point/access/no`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token,
+               pid: pid
+            })
+        }
+    )
+
+    return await res.json();
+}
+
 export {
     pullMapData,
     sendLoginCode,
@@ -298,5 +319,6 @@ export {
     redeemCode,
     logMapVisit,
     approvePoint,
-    getPointAccesses
+    getPointAccesses,
+    getPointAccessesAmount
 };

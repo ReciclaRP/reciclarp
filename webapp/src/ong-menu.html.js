@@ -2,6 +2,8 @@ import { invalidateLogin, loggedIn } from './logic/login';
 import { descriptionFromPointTypes } from './logic/misc';
 import { pullMapData, deletePoint, approvePoint, getPointAccesses } from './logic/backend';
 import { Chart, registerables } from "chart.js";
+import { pointAccessNo } from './logic/points';
+
 async function queryActions() {
     const urlParams = new URLSearchParams(window.location.search);
     const deleteaction = urlParams.get('deletepid');
@@ -111,7 +113,7 @@ async function populateTable() {
                 <td>${String(entry.lati).substring(0,8)}...</td>
                 <td>${String(entry.long).substring(0,8)}...</td>
                 <td>USERNAME_HERE</td>
-                <td>${entry.approved}</td>
+                <td>${await pointAccessNo(entry.pid)}</td>
             `
             let options_available = document.createElement("td");
             
