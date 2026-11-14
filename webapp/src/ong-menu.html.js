@@ -74,9 +74,9 @@ async function queryActions() {
                         '16h', '17h', '19h', '20h', '21h', '23h'
                     ],
                     datasets: [{
-                    label: 'nº de acessos',
-                    data: bucket,
-                    borderWidth: 1
+                        label: 'nº de acessos',
+                        data: bucket,
+                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -145,5 +145,6 @@ async function populateTable() {
         }
     }
 }
+
 await populateTable();
 await queryActions();
