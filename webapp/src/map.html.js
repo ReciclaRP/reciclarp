@@ -4,6 +4,18 @@ import { pullMapData, logMapVisit } from './logic/backend';
 import { descriptionFromPointTypes } from './logic/misc';
 import { loggedIn, invalidateLogin } from './logic/login';
 
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIcon2x,
+  shadowUrl: markerShadow,
+});
+
 async function logVisit() {
     let el = document.getElementById("open-in-maps");
 
