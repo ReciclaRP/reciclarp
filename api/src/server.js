@@ -1190,6 +1190,6 @@ setInterval(() => {
   ticket_queue.purge();
 }, 60000);
 
-app.listen(API_PORT, () => {
+app.listen(API_PORT, '127.0.0.1', () => {
   console.log(`API running on http://localhost:${API_PORT}`);
 });
