@@ -1,6 +1,6 @@
 # RP Recicla
 
-[Branch de Desenvolvimento](https://github.com/ReciclaRP/reciclarp/tree/semana/7)
+[Deploy](https://reciclarp.comrades.sbs)
 [Painel de Rastreamento](https://github.com/orgs/ReciclaRP/projects/1/views/1)
 [Protótipo do Figma](https://www.figma.com/design/VpJQCMN1ncZQrlraGeXbfb/Trabalho-do-Lucas?node-id=0-1&t=VMZweitYrp64vKfi-1)
 
