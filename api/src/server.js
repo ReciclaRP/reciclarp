@@ -1185,7 +1185,13 @@ app.post("/report/create", (req, res) => {
 app.get('/api/ping', (req, res) => {
   logger.info(`Route "/api/ping" triggered.`);
 
-  res.send(req.ip);
+  res.json({
+    ip: req.ip,
+    ips: req.ips,
+    socket: req.socket.remoteAddress,
+    xff: req.headers['x-forwarded-for'],
+    cfIp: req.headers['cf-connecting-ip'],
+  });
 });
 
 setInterval(() => {
