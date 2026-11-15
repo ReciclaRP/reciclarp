@@ -28,7 +28,6 @@ const RESEND_SECRET = process.env.RECICLA_RESEND_SECRET || false;
 const WEBAPP_URL = process.env.RECICLA_WEBAPP_URL || 'http://localhost:5173';
 const OTC_DURATION = process.env.RECICLA_OTC_DURATION || 15;
 const MAX_POINTDESCRIPTION_LEN = process.env.RECICLA_MAX_POINTDESCRIPTION_LEN || 200;
-const PROXY_NO = process.env.RECICLA_PROXY_NO || 0;
 
 let ESCALATION_TOKEN = process.env.RECICLA_ESCALATION_TOKEN;
 
@@ -51,7 +50,6 @@ app.use(cors({
   origin: WEBAPP_URL,
 }));
 
-app.set("trust proxy", PROXY_NO);
 
 const general_limiter = ratelimits.rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 minutes
