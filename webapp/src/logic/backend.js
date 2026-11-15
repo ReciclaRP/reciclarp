@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000"
+const API_URL = "https://reciclaapi.comrades.sbs"
 
 async function pullMapData() {
     let res = await fetch(
