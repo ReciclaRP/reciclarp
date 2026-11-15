@@ -44,6 +44,18 @@ function __RECICLA_DEFAULT_SCHEMA() {
             FOREIGN KEY(uid) REFERENCES user(id),
             FOREIGN KEY(pid) REFERENCES point(pid)
         );
+
+        CREATE TABLE access (
+            aid INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            hour_accessed TEXT NOT NULL,
+
+            uid INTEGER NOT NULL,
+            pid INTEGER NOT NULL,
+
+            FOREIGN KEY(uid) REFERENCES user(id),
+            FOREIGN KEY(pid) REFERENCES point(pid)
+        );
     `;
 }
 

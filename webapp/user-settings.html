@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <link rel="icon" href="/favicon.ico" />
+
+    <link rel="stylesheet" href="/styles/general.css">
+    <link rel="stylesheet" href="/styles/topbar.css">
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#6868c8" />
+ 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <title>ReciclaRP</title>
+  </head>
+
+  <body>
+    <div class="top-user-bar">
+      <div class="content-row">
+        <div class="cr-menu">
+          <a href="/menu.html">&LeftArrow;</a>
+        </div>
+
+        <div class="cr-user">
+          <a href="/user-settings.html">
+            <img src="/images/icons/user.png" height="40" width="40">
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <h1>Página do usuário</h1>
+
+      <div class="code-redeeming-options">
+        <h3>Resgate do Código especial</h3>
+        <p>O resgate de códigos de produto pode ser realizado no campo abaixo.</p>
+
+        <input type="text" id="special-code-input">
+        <input type="submit" id="special-code-submit" value="Resgatar Código">
+      </div>
+
+      <div class="account-options">
+        <fieldset>
+          <legend>Ações da conta</legend>
+
+          <input type="submit" id="logout-button" value="Terminar Sessão">
+          <input type="submit" id="deleteacc-button" style="background-color: rgb(220, 37, 37);" value="Deletar Conta">
+        </fieldset>
+      </div>
+
+      <!-- Botão de delete aqui! -->
+    </div>
+  </body>
+
+  <!--seems like type="module" changes things / drops into node! -->
+  <script src="/src/user-settings.html.js" type="module"></script>
+</html>

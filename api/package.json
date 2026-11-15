@@ -14,10 +14,12 @@
     "cors": "^2.8.6",
     "dotenv": "^18.0.8",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.7.3",
     "generate-license-file": "^4.2.5",
     "pg": "^8.23.0",
     "pino": "^10.3.1",
-    "resend": "^6.28.1"
+    "resend": "^6.28.1",
+    "xss": "^1.0.17"
   },
   "allowScripts": {
     "better-sqlite3@13.0.3": true

@@ -49,3 +49,10 @@ CREATE TABLE report (
   FOREIGN KEY(uid) REFERENCES user(id),
   FOREIGN KEY(pid) REFERENCES point(pid)
 );
+
+CREATE TABLE access (
+  hour_accessed TEXT NOT NULL,
+
+  pid INTEGER NOT NULL,
+  FOREIGN KEY(pid) REFERENCES point(pid)
+)

@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000"
+const API_URL = "https://reciclaapi.comrades.sbs"
 
 async function pullMapData() {
     let res = await fetch(
@@ -103,10 +103,222 @@ async function createReport(email, token, pid, report) {
     return await res.json();
 }
 
+async function createPoint(email, token, pointdescription, lati, long, time_open, time_close, accepts_paper, accepts_metal, accepts_organic, accepts_biological) {
+    let res = await fetch(
+        `${API_URL}/point/create`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token,
+
+               data: {
+                    pointdescription: pointdescription,
+                    lati: lati,
+                    long: long,
+                    time_open: time_open,
+                    time_close: time_close,
+                    accepts_paper: accepts_paper,
+                    accepts_metal: accepts_metal,
+                    accepts_organic: accepts_organic,
+                    accepts_biological: accepts_biological
+               }
+            })
+        }
+    )
+
+    return await res.json();
+}
+
+async function deletePoint(email, token, pid) {
+    let res = await fetch(
+        `${API_URL}/point/remove`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token,
+
+               data: {
+                    pid: pid
+               }
+            })
+        }
+    )
+
+    return await res.json();
+}
+
+async function approvePoint(email, token, pid) {
+    let res = await fetch(
+        `${API_URL}/point/approve`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token,
+
+               data: {
+                    pid: pid
+               }
+            })
+        }
+    )
+
+    return await res.json();
+}
+
+async function invalidateLoginTokens(email, token) {
+    let res = await fetch(
+        `${API_URL}/auth/logout`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token
+            })
+        }
+    )
+
+    return await res.json();
+}
+
+async function deleteAccount(email, token) {
+    let res = await fetch(
+        `${API_URL}/auth/delete`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token
+            })
+        }
+    )
+
+    return await res.json();
+}
+
+async function redeemCode(email, token, code) {
+    let res = await fetch(
+        `${API_URL}/auth/special`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token,
+               code: code
+            })
+        }
+    )
+
+    return await res.json();
+}
+
+async function logMapVisit(email, token, pid) {
+    let res = await fetch(
+        `${API_URL}/point/access/log`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token,
+               pid: pid
+            })
+        }
+    )
+}
+
+async function getPointAccesses(email, token, pid, no) {
+    let res = await fetch(
+        `${API_URL}/point/access/get`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token,
+               pid: pid,
+               no: no
+            })
+        }
+    )
+
+    return await res.json();
+}
+
+async function getPointAccessesAmount(email, token, pid) {
+    let res = await fetch(
+        `${API_URL}/point/access/no`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+               email: email,
+               token: token,
+               pid: pid
+            })
+        }
+    )
+
+    return await res.json();
+}
+
 export {
     pullMapData,
     sendLoginCode,
     getLoginToken,
     checkLoginState,
-    createReport
+    createReport,
+    createPoint,
+    deletePoint,
+    invalidateLoginTokens,
+    deleteAccount,
+    redeemCode,
+    logMapVisit,
+    approvePoint,
+    getPointAccesses,
+    getPointAccessesAmount
 };

@@ -35,6 +35,24 @@ function descriptionFromPointTypes(point) {
     return false;
 }
 
+function cbtob(cbval) {
+    if(cbval == "on") return true;
+    return false;
+}
+
+function isBackOng() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const myParam = urlParams.get("back");
+
+    if(myParam == "ong") {
+        return true;
+    }
+
+    return false;
+}
+
 export {
-    descriptionFromPointTypes
+    descriptionFromPointTypes,
+    cbtob,
+    isBackOng
 };

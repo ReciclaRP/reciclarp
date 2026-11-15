@@ -2,21 +2,47 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="icon" href="/favicon.ico" />
 
     <link rel="stylesheet" href="/styles/general.css">
     <link rel="stylesheet" href="/styles/topbar.css">
-
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#6868c8" />
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <title>ReciclaRP</title>
   </head>
 
   <body>
+    <div class="primary-space" id="stats-overlay">
+      <div class="chart-space">
+        <div class="wintop-flex">
+          <div>
+            <h3>Estatísticas para o Ponto nº <span id="ptno">XX</span></h3>
+          </div>
+
+          <div style="margin-left:auto;">
+            <a href="/ong-menu.html" style="text-decoration: none; color: black;">
+              <div class="x-button">
+                X
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div class="stats-div">
+          <h4>Acessos ao ponto, por hora.</h4>
+          <canvas id="statsChart"></canvas>
+        </div>
+      </div>
+    </div>
+
     <div class="top-user-bar">
       <div class="content-row">
         <div class="cr-menu">
-          <a href="#">☰</a>
+          <a href="/menu.html">☰</a>
         </div>
 
         <div class="cr-user">
@@ -30,56 +56,44 @@
     <div class="main-content">
       <h1>Portal da organização</h1>
 
-      <!-- sub. por um template depois... -->
-      <a href="#" class="cblink">
-        <div class="config-box">
-          <div class="iconplustitle">
-            <div class="icp-icon">
-              <img src="/images/icons/info.png" width="40" height="40">
+      <h2>Pontos</h2>
+
+      <div class="table-content">
+        <table id="points-table">
+          <tr>
+            <th>ID</th>
+            <th>Descrição</th>
+            <th>Hr. aberto</th>
+            <th>Hr. fechado</th>
+            <th>Tipos de lixo</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Criador</th>
+            <th>nº Acessado</th>
+            <th>Opções</th>
+          </tr>
+        </table>
+
+        <div class="bottom-options">
+          <div class="bottom-links">
+            <div>
+              <a href="/point-create.html?back=ong">Criar novo ponto</a>
             </div>
-
-            <div class="icp-title">
-              <h3>Pontos</h3>
-            </div>
-          </div>
-
-          <p>Veja, edite, crie, e aprove pontos de reciclagem.</p>
-        </div>
-      </a>
-
-      <a href="#" class="cblink">
-        <div class="config-box">
-          <div class="iconplustitle">
-            <div class="icp-icon">
-              <img src="/images/icons/info.png" width="40" height="40">
-            </div>
-
-            <div class="icp-title">
-              <h3>Painel completo</h3>
-            </div>
-          </div>
-
-          <p>Veja e exporte o relatório dos pontos disponíveis.</p>
-        </div>
-      </a>
-
-      <a href="#" class="cblink">
-        <div class="config-box">
-          <div class="iconplustitle">
-            <div class="icp-icon">
-              <img src="/images/icons/gear.png" width="40" height="40">
-            </div>
-
-            <div class="icp-title">
-              <h3>Configurações da conta</h3>
+            
+            <div>
+              <a href="#" id="download-export">Exportar dados</a>
             </div>
           </div>
 
-          <p>Gerencie seus dados e defina suas preferências.</p>
+          <div class="bottom-export-ready" id="bottom-export-window">
+            <h4>Os dados estão prontos para download</h4>
+            <p><a href="#" id="data-object-link">Baixar</a></p>
+          </div>
         </div>
-      </a>
+      </div>
     </div>
   </body>
 
   <!--seems like type="module" changes things / drops into node! -->
+  <script type="module" src="/src/ong-menu.html.js"></script>
 </html>

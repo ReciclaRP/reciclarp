@@ -1,7 +1,35 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { pullMapData } from './logic/backend';
+import { pullMapData, logMapVisit } from './logic/backend';
 import { descriptionFromPointTypes } from './logic/misc';
+import { loggedIn, invalidateLogin } from './logic/login';
+
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIcon2x,
+  shadowUrl: markerShadow,
+});
+
+async function logVisit() {
+    let el = document.getElementById("open-in-maps");
+
+    if(el && el.dataset.pid) {
+        let udata = await loggedIn();
+        if(udata) {
+            logMapVisit(udata.email, udata.token, el.dataset.pid);
+
+            window.location.href = el.href;
+        } else {
+            invalidateLogin();
+        }
+    }
+}
 
 function openPointPopup(point, x, y) {
     let popup = document.getElementById("location-popup");
@@ -37,7 +65,7 @@ function openPointPopup(point, x, y) {
 
         <div class="button-options">
             <div>
-                <a href="https://maps.google.com/?q=${point.lati},${point.long}" class="maps-open-button">Abrir no Maps</a>
+                <a href="https://maps.google.com/?q=${point.lati},${point.long}" id="open-in-maps" data-pid="${point.pid}" class="maps-open-button">Abrir no Maps</a>
             </div>
 
             <div>
@@ -50,9 +78,13 @@ function openPointPopup(point, x, y) {
         </div>
     </div>`;
 
+    document.getElementById("open-in-maps").addEventListener("click", () => {
+        logVisit();
+    });
+
     popup.style.display = "block";
-    popup.style.left = x+'px';
-    popup.style.top = y+'px';
+    popup.style.left = `${x}px`;
+    popup.style.top = `${y}px`;
 }
 
 async function markerClicked(e) {
@@ -70,12 +102,14 @@ async function putMapMarkers(map, clickedfunction) {
     let data = await pullMapData();
 
     for(let point of data) {
-        L.marker([point.lati, point.long])
-            .addTo(map)
-            .on(
-                'click', 
-                clickedfunction
-            );
+        if(point.approved) {
+            L.marker([point.lati, point.long])
+                .addTo(map)
+                .on(
+                    'click', 
+                    clickedfunction
+                );
+        }
     }
 }
 
@@ -103,5 +137,3 @@ await createMap(
     -21.1684, 
     -47.8109
 );
-
-console.log(await pullMapData());
