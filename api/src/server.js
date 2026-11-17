@@ -5,6 +5,7 @@ const process = require('node:process');
 const crypto = require("crypto");
 
 const defaultschema = require("./db/schema.js");
+const errormessages = require("./responses/errormessages.js");
 
 const express = require('express');
 const pino = require('pino');
@@ -658,18 +659,10 @@ app.post("/auth/token", (req, res) => {
         token: account.token()
       });
     } else {
-      res.json({
-        type: "error",
-
-        description: "Incorrect code."
-      })
+      res.json(errormessages.res_error_text("BADCODE"));
     }
   } else {
-    res.json({
-      type: "error",
-
-      description: "Malformed request."
-    })
+    res.json(errormessages.res_error_text("MALFORMED"));
   }
 });
 
@@ -690,18 +683,10 @@ app.post("/auth/check", (req, res) => {
         ong: account.is_ong()
       });
     } else {
-      res.json({
-        type: "error",
-
-        description: "Incorrect authentication information was provided."
-      })
+      res.json(errormessages.res_error_text("INCORRECTAUTH"));
     }
   } else {
-    res.json({
-      type: "error",
-
-      description: "Malformed request"
-    });
+    res.json(errormessages.res_error_text("MALFORMED"));
   }
 });
 
@@ -719,25 +704,13 @@ app.post("/auth/delete", (req, res) => {
           type: "okay"
         });
       } else {
-        res.json({
-          type: "error",
-
-          description: "Your account cannot be deleted, as it is possibly banned."
-        });
+        res.json(errormessages.res_error_text("MAYBEBANNED"));
       }
     } else {
-      res.json({
-        type: "error",
-
-        description: "Incorrect authentication information was provided."
-      });
+      res.json(errormessages.res_error_text("INCORRECTAUTH"));
     }
   } else {
-    res.json({
-      type: "error",
-
-      description: "Malformed request"
-    });
+    res.json(errormessages.res_error_text("MALFORMED"));
   }
 });
 
@@ -754,18 +727,10 @@ app.post("/auth/logout", (req, res) => {
         type: "okay"
       });
     } else {
-      res.json({
-        type: "error",
-
-        description: "Incorrect authentication information was provided."
-      });
+      res.json(errormessages.res_error_text("INCORRECTAUTH"));
     }
   } else {
-    res.json({
-      type: "error",
-
-      description: "Malformed request"
-    });
+    res.json(errormessages.res_error_text("MALFORMED"));
   }
 });
 
@@ -785,25 +750,13 @@ app.post("/auth/special", (req, res) => {
           type: "okay"
         });
       } else {
-        res.json({
-          type: "error",
-
-          description: "The redeemable code was incorrect."
-        });
+        res.json(errormessages.res_error_text("REDEEMINCORRECT"));
       }
     } else {
-      res.json({
-        type: "error",
-
-        description: "Incorrect authentication information was provided."
-      });
+      res.json(errormessages.res_error_text("INCORRECTAUTH"));
     }
   } else {
-    res.json({
-      type: "error",
-
-      description: "Malformed request"
-    });
+    res.json(errormessages.res_error_text("MALFORMED"));
   }
 });
 
@@ -858,18 +811,10 @@ app.post("/point/create", (req, res) => {
         type: "okay"
       });
     } else {
-      res.json({
-        type: "error",
-
-        description: "Not enough data was provided."
-      });
+      res.json(errormessages.res_error_text("NOTENOUGHDATA"));
     }
   } else {
-    res.json({
-      type: "error",
-
-      description: "Incorrect authentication information was provided."
-    });
+    res.json(errormessages.res_error_text("INCORRECTAUTH"));
   }
 });
 
@@ -914,32 +859,16 @@ app.post("/point/update", (req, res) => {
             type: "okay"
           });
         } else {
-          res.json({
-            type: "error",
-
-            description: "Not enough data was provided."
-          });
+          res.json(errormessages.res_error_text("NOTENOUGHDATA"));
         }
       } else {
-        res.json({
-          type: "error",
-    
-          description: "The data you seek to access does not exist."
-        });
+        res.json(errormessages.res_error_text("DATANOTEXIST"));
       }
     } else {
-      res.json({
-        type: "error",
-  
-        description: "Incorrect authentication information was provided."
-      });
+      res.json(errormessages.res_error_text("INCORRECTAUTH"));
     }
   } else {
-    res.json({
-      type: "error",
-
-      description: "Incorrect authentication information was provided."
-    });
+    res.json(errormessages.res_error_text("INCORRECTAUTH"));
   }
 });
 
@@ -959,25 +888,13 @@ app.post("/point/remove", (req, res) => {
           type: "okay"
         });
       } else {
-        res.json({
-          type: "error",
-    
-          description: "The data you seek to access does not exist."
-        });
+        res.json(errormessages.res_error_text("DATANOTEXIST"));
       }
     } else {
-      res.json({
-        type: "error",
-  
-        description: "Incorrect authentication information was provided."
-      });
+      res.json(errormessages.res_error_text("INCORRECTAUTH"));
     }
   } else {
-    res.json({
-      type: "error",
-
-      description: "Incorrect authentication information was provided."
-    });
+    res.json(errormessages.res_error_text("INCORRECTAUTH"));
   }
 });
 
@@ -996,25 +913,13 @@ app.post("/point/approve", (req, res) => {
           type: "okay"
         });
       } else {
-        res.json({
-          type: "error",
-    
-          description: "The data you seek to access does not exist."
-        });
+        res.json(errormessages.res_error_text("DATANOTEXIST"));
       }
     } else {
-      res.json({
-        type: "error",
-  
-        description: "Incorrect authentication information was provided."
-      });
+      res.json(errormessages.res_error_text("INCORRECTAUTH"));
     }
   } else {
-    res.json({
-      type: "error",
-
-      description: "Incorrect authentication information was provided."
-    });
+    res.json(errormessages.res_error_text("INCORRECTAUTH"));
   }
 });
 
@@ -1033,25 +938,13 @@ app.post("/point/access/log", (req, res) => {
           type: "okay"
         });
       } else {
-        res.json({
-          type: "error",
-    
-          description: "The data you seek to access does not exist."
-        });
+        res.json(errormessages.res_error_text("DATANOTEXIST"));
       }
     } else {
-      res.json({
-        type: "error",
-  
-        description: "Insufficient data was provided."
-      });
+      res.json(errormessages.res_error_text("NOTENOUGHDATA"));
     }
   } else {
-    res.json({
-      type: "error",
-
-      description: "Incorrect authentication information was provided."
-    });
+    res.json(errormessages.res_error_text("INCORRECTAUTH"));
   }
 });
 
@@ -1072,32 +965,16 @@ app.post("/point/access/get", (req, res) => {
             data: data
           });
         } else {
-          res.json({
-            type: "error",
-      
-            description: "The data you seek to access does not exist."
-          });
+          res.json(errormessages.res_error_text("DATANOTEXIST"));
         }
       } else {
-        res.json({
-          type: "error",
-
-          description: "Incorrect authentication information was provided."
-        });
+        res.json(errormessages.res_error_text("INCORRECTAUTH"));
       }
     } else {
-      res.json({
-        type: "error",
-  
-        description: "Insufficient data was provided."
-      });
+      res.json(errormessages.res_error_text("NOTENOUGHDATA"));
     }
   } else {
-    res.json({
-      type: "error",
-
-      description: "Incorrect authentication information was provided."
-    });
+    res.json(errormessages.res_error_text("INCORRECTAUTH"));
   }
 });
 
@@ -1118,32 +995,16 @@ app.post("/point/access/no", (req, res) => {
             data: data
           });
         } else {
-          res.json({
-            type: "error",
-      
-            description: "The data you seek to access does not exist."
-          });
+          res.json(errormessages.res_error_text("DATANOTEXIST"));
         }
       } else {
-        res.json({
-          type: "error",
-
-          description: "Incorrect authentication information was provided."
-        });
+        res.json(errormessages.res_error_text("INCORRECTAUTH"));
       }
     } else {
-      res.json({
-        type: "error",
-  
-        description: "Insufficient data was provided."
-      });
+      res.json(errormessages.res_error_text("NOTENOUGHDATA"));
     }
   } else {
-    res.json({
-      type: "error",
-
-      description: "Incorrect authentication information was provided."
-    });
+    res.json(errormessages.res_error_text("INCORRECTAUTH"));
   }
 });
 
@@ -1165,18 +1026,10 @@ app.post("/report/create", (req, res) => {
           type: "okay"
       });
     } else {
-      res.json({
-          type: "error",
-
-          description: "Insufficient information was provided."
-      });
+      res.json(errormessages.res_error_text("NOTENOUGHDATA"));
     }
   } else {
-    res.json({
-        type: "error",
-
-        description: "Incorrect authentication information was provided."
-    });
+    res.json(errormessages.res_error_text("INCORRECTAUTH"));
   }
 });
 
