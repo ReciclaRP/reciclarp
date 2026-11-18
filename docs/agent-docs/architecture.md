@@ -39,6 +39,9 @@ erDiagram
     point ||--o{ report : "recebe"
     point ||--o{ access : "é acessado"
 
+    user ||..o| ticket_otc : "solicita (memória)"
+    user ||..o| token_mem  : "autentica (memória)"
+
     user {
         INTEGER id PK "AUTOINCREMENT"
         VARCHAR(120) uname "NOT NULL"
@@ -79,12 +82,33 @@ erDiagram
         INTEGER uid FK "NOT NULL → user.id"
         INTEGER pid FK "NOT NULL → point.pid"
     }
+
+    ticket_otc["ticket_otc (em memória, volátil)"] {
+        TEXT email PK "chave = user.email, sem FK"
+        TEXT code "6 dígitos, uso único"
+        DATETIME created_at "expira após OTC_DURATION (15 min padrão)"
+    }
+
+    token_mem["token_mem (em memória, volátil)"] {
+        TEXT email PK "chave = user.email, sem FK"
+        TEXT token "aleatório, sem expiração; invalidado no logout/ban"
+    }
+
+    classDef memory fill:#fff4ce,stroke:#b8860b,stroke-width:2px,stroke-dasharray:5 5
+    class ticket_otc,token_mem memory
 ```
 
 All four foreign keys are `NOT NULL`, so every point has exactly one creator and
 every report/access row belongs to exactly one user and one point; the `||--o{`
-cardinalities reflect that. OTC tickets and login tokens live in memory
-(`Tickets`/`Tokens`), not in SQLite, so they are outside this diagram.
+cardinalities reflect that.
+
+The last two entities are **not database tables**. `ticket_otc` and `token_mem`
+live in the API process memory (`Tickets`/`Tokens` in
+`api/src/features/`), keyed by `user.email` rather than `user.id`, with no FK
+enforced and nothing persisted. They are drawn with dashed borders, a different
+fill, and non-identifying (`..`) relationships to signal that. Each user has at
+most one active OTC ticket (a new login overwrites the previous code) and at most
+one token; a restart of the API empties both.
 
 Domain flow: a citizen creates a point (`approved=0`) → an ONG approves it
 (through `/point/approve`, or implicitly by updating it) → citizens file
