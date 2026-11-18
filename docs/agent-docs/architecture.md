@@ -31,6 +31,61 @@ Four tables (live schema is the SQL string inside `api/src/db/schema.js` —
 - **`report`** — `rid`, `reportdescription`, three `category_*` flags (noexist, full, badtime), `uid` → user.id, `pid` → point.pid. Reports are citizen complaints about a point.
 - **`access`** — `aid`, `hour_accessed` (TEXT `HH:MM`), `uid` → user.id, `pid` → point.pid. One row per logged-in user clicking "Abrir no Maps" on a point.
 
+```mermaid
+erDiagram
+    user ||--o{ point  : "cria"
+    user ||--o{ report : "registra"
+    user ||--o{ access : "abre no Maps"
+    point ||--o{ report : "recebe"
+    point ||--o{ access : "é acessado"
+
+    user {
+        INTEGER id PK "AUTOINCREMENT"
+        VARCHAR(120) uname "NOT NULL"
+        VARCHAR(160) email "NOT NULL, UNIQUE"
+        BOOLEAN banned "NOT NULL, padrão 0"
+        BOOLEAN validated "NOT NULL, padrão 0"
+        BOOLEAN ong "NOT NULL, padrão 0"
+    }
+
+    point {
+        INTEGER pid PK "AUTOINCREMENT"
+        TEXT pointdescription "NOT NULL"
+        REAL lati "NOT NULL"
+        REAL long "NOT NULL"
+        TEXT time_open "NOT NULL, ex. 7:00"
+        TEXT time_close "NOT NULL, ex. 19:00"
+        BOOLEAN accepts_paper "NOT NULL, padrão 0"
+        BOOLEAN accepts_metal "NOT NULL, padrão 0"
+        BOOLEAN accepts_organic "NOT NULL, padrão 0"
+        BOOLEAN accepts_biological "NOT NULL, padrão 0"
+        BOOLEAN approved "NOT NULL, padrão 0"
+        INTEGER creator FK "NOT NULL → user.id"
+    }
+
+    report {
+        INTEGER rid PK "AUTOINCREMENT"
+        TEXT reportdescription "NOT NULL"
+        BOOLEAN category_noexist "NOT NULL, padrão 0"
+        BOOLEAN category_full "NOT NULL, padrão 0"
+        BOOLEAN category_badtime "NOT NULL, padrão 0"
+        INTEGER uid FK "NOT NULL → user.id"
+        INTEGER pid FK "NOT NULL → point.pid"
+    }
+
+    access {
+        INTEGER aid PK "AUTOINCREMENT"
+        TEXT hour_accessed "NOT NULL, HH:MM"
+        INTEGER uid FK "NOT NULL → user.id"
+        INTEGER pid FK "NOT NULL → point.pid"
+    }
+```
+
+All four foreign keys are `NOT NULL`, so every point has exactly one creator and
+every report/access row belongs to exactly one user and one point; the `||--o{`
+cardinalities reflect that. OTC tickets and login tokens live in memory
+(`Tickets`/`Tokens`), not in SQLite, so they are outside this diagram.
+
 Domain flow: a citizen creates a point (`approved=0`) → an ONG approves it
 (through `/point/approve`, or implicitly by updating it) → citizens file
 reports about points → the ONG fixes/edits or removes the point. When a logged-in
