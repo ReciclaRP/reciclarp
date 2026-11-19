@@ -22,6 +22,9 @@ erDiagram
     point ||--o{ report : "recebe"
     point ||--o{ access : "é acessado"
 
+    user ||..o| ticket_otc : "solicita (memória)"
+    user ||..o| token_mem  : "autentica (memória)"
+
     user {
         INTEGER id PK "AUTOINCREMENT"
         VARCHAR(120) uname "NOT NULL"
@@ -62,4 +65,18 @@ erDiagram
         INTEGER uid FK "NOT NULL → user.id"
         INTEGER pid FK "NOT NULL → point.pid"
     }
+
+    ticket_otc["ticket_otc (em memória, volátil)"] {
+        TEXT email PK "chave = user.email, sem FK"
+        TEXT code "6 dígitos, uso único"
+        DATETIME created_at "expira após OTC_DURATION (15 min padrão)"
+    }
+
+    token_mem["token_mem (em memória, volátil)"] {
+        TEXT email PK "chave = user.email, sem FK"
+        TEXT token "aleatório, sem expiração; invalidado no logout/ban"
+    }
+
+    classDef memory fill:#fff4ce,stroke:#b8860b,stroke-width:2px,stroke-dasharray:5 5
+    class ticket_otc,token_mem memory
 ```
