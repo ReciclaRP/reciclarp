@@ -512,6 +512,34 @@ app.post("/report/create", (req, res) => {
   }
 });
 
+app.post("/report/getlist", (req, res) => {
+  logger.info(`Route "/report/getlist" triggered.`);
+
+  if(token_list.get(req.body.email) === req.body.token) {
+    if(req.body.description && req.body.problem_kind && req.body.pid) {
+      const point = new points.Point();
+      if(point.read_from_pid(req.body.pid)) {
+        let data = point.get_reports();
+
+        if(data) {
+          res.json({
+              type: "okay",
+              data: data
+          });
+        } else {
+          res.json(errormessages.res_error_text("DATANOTEXIST"));
+        }
+      } else {
+        res.json(errormessages.res_error_text("DATANOTEXIST"));
+      }
+    } else {
+      res.json(errormessages.res_error_text("NOTENOUGHDATA"));
+    }
+  } else {
+    res.json(errormessages.res_error_text("INCORRECTAUTH"));
+  }
+});
+
 app.get('/api/ping', (req, res) => {
   logger.info(`Route "/api/ping" triggered.`);
 
