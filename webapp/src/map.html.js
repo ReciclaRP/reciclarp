@@ -72,9 +72,10 @@ function openPointPopup(point, x, y) {
                 <a href="/user-report.html?pid=${point.pid}">Reportar Problema</a>
             </div>
 
+            <!--
             <div>
                 <a href="#">Sugerir edição</a>
-            </div>
+            </div> -->
         </div>
     </div>`;
 

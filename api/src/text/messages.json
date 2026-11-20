@@ -1,0 +1,9 @@
+{
+    "INCORRECTAUTH": "Incorrect authentication information was provided.",
+    "MAYBEBANNED": "Your account cannot be deleted, as it is possibly banned.",
+    "MALFORMED": "Malformed request.",
+    "REDEEMINCORRECT": "The redeemable code was incorrect.",
+    "NOTENOUGHDATA": "Not enough data was provided.",
+    "DATANOTEXIST": "The data you seek to access does not exist.",
+    "BADCODE": "Incorrect code."
+}

@@ -1,4 +1,4 @@
-const API_URL = "https://reciclaapi.comrades.sbs"
+const API_URL = import.meta.env.VITE_RECICLA_API_URL || "https://reciclaapi.comrades.sbs";
 
 async function pullMapData() {
     let res = await fetch(

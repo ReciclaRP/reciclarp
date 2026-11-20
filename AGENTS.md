@@ -12,7 +12,7 @@ not replace it.
 
 **Agents may change directly:**
 
-- Files under `api/tests/` and `webapp/tests/` — **writing and improving tests
+- Files under `.github`, `api/tests/` and `webapp/tests/` — **writing and improving tests
   is the agents' primary contribution to this codebase.**
 - Documentation: `AGENTS.md`'s doc index, `docs/agent-docs/*`,`docs/wip*` and
   contributor-facing parts of `README.md`, when asked.
