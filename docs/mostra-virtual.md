@@ -25,3 +25,7 @@
 Trabalhar em equipe exige convenções claras: branches por semana, Conventional Commits e revisão obrigatória do PO em toda PR. Aprendemos como criar APIs em Express e nos educamos sobre vulnerabilidades comuns em sistemas de autênticação.
 
 ## Imagens enviadas
+<img width="1080" height="720" alt="ReciclaRP" src="https://github.com/user-attachments/assets/4c474ff0-7123-41d1-982c-cc27ac26f4a1" />
+<img width="379" height="827" alt="Screenshot_2026-11-20_19-04-13" src="https://github.com/user-attachments/assets/b2438d9f-7775-4e62-8e78-8e57e39010b5" />
+<img width="369" height="825" alt="Screenshot_2026-11-20_19-04-27" src="https://github.com/user-attachments/assets/f17c2483-d3e5-4148-a37f-250ce73db909" />
+<img width="381" height="831" alt="Screenshot_2026-11-20_19-03-46" src="https://github.com/user-attachments/assets/25cbbb03-e7c5-4891-86ab-9a6f7f4d2cea" />
