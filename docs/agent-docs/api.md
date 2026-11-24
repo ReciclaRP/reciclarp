@@ -22,6 +22,9 @@ Environment variables (also read from `api/.env` via dotenv):
 | `RECICLA_OTC_DURATION` | `15` | Minutes an OTC code stays valid before `Tickets.purge()`. |
 | `RECICLA_MAX_POINTDESCRIPTION_LEN` | `200` | Character cap applied to point descriptions before XSS filtering. |
 
+To watch availability, `../scripts/ping-watch.sh` polls `GET /api/ping` and
+reports outages (optionally by SMS); see [`scripts.md`](scripts.md).
+
 The SQLite file is `recicladb.sqlite` in the process working directory. When it
 does not exist at boot, the schema is created and seeded with the admin account
 and 8 real "ecopontos" from Ribeirão Preto (seed data in

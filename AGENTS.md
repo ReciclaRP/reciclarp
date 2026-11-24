@@ -14,6 +14,7 @@ not replace it.
 
 - Files under `.github`, `api/tests/` and `webapp/tests/` — **writing and improving tests
   is the agents' primary contribution to this codebase.**
+- Scripts related to the project under `scripts/`
 - Documentation: `AGENTS.md`'s doc index, `docs/agent-docs/*`,`docs/wip*` and
   contributor-facing parts of `README.md`, when asked.
 - The environment (running servers, databases, scratch files outside the repo)
@@ -114,6 +115,7 @@ DB (see `api/tests/support/harness.js`) — no mocking of the backend.
 | [`webapp.md`](docs/agent-docs/webapp.md) | You're touching the frontend: page/module mapping, the `<page>.html.js` pattern, logic modules, styles, DOM stubbing. |
 | [`testing.md`](docs/agent-docs/testing.md) | You're writing or running tests: harness details, test file inventory, CI behavior, how to add tests. |
 | [`security.md`](docs/agent-docs/security.md) | You need the threat model, an attack chain, the meaning of a `SEC-xxx` finding, or the remediation spec paired with `api/tests/security.regression.test.js`. |
+| [`scripts.md`](docs/agent-docs/scripts.md) | You're adding to or running `scripts/`: inventory, conventions, `ping-watch.sh` usage and its optional Twilio SMS alerts. |
 | [`conventions-and-context.md`](docs/agent-docs/conventions-and-context.md) | You need team rules in depth, the academic document index in `docs/`, or background on scope/backlog. |
 | [`../wip/`](docs/wip/) | You need working notes or proposals that are not yet reflected in the academic deliverables (for example, the current doc-drift report). |
 

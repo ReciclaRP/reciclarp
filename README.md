@@ -108,6 +108,7 @@ O webapp inclui um manifesto PWA (`webapp/manifest.webmanifest`), então pode se
 /api        - API REST (Express), acesso a dados, regras de negócio
 /cli        - Pequeno programa utilizado para interagir com a API. Pode ser ignorado.
 /db         - schema.sql, somente para referência
+/scripts    - scripts de apoio (por exemplo, `ping-watch.sh`, que avisa quando a API fica fora do ar)
 /docs       - documentação acadêmica e notas de apoio (`docs/agent-docs`, `docs/wip`)
 ```
 
@@ -159,7 +160,7 @@ Nenhum PR que introduza alterações cobertas pelos testes deverá ser integrado
 ### Documentação para contribuidores
 
 - `AGENTS.md` — contrato de trabalho para agentes de IA e índice da documentação técnica;
-- `docs/agent-docs/` — guias técnicos de arquitetura, API, webapp, testes e segurança (em inglês);
+- `docs/agent-docs/` — guias técnicos de arquitetura, API, webapp, testes, segurança e scripts (em inglês);
 - `docs/wip/doc-drift.md` — divergências conhecidas entre os documentos acadêmicos e o código atual, com propostas de correção.
 
 **O SOFTWARE ESTÁ EM DESENVOLVIMENTO ATIVO, E PODE DIVERGIR DA ESPECIFICAÇÃO!**
